@@ -32891,5 +32891,22 @@ body .note-modal-backdrop {
     /* WAJIB */
 }
 
+#sidebar-bootstrap {
+    max-height: 550px;
+    overflow-y: auto;
+}
 
+#sidebar-bootstrap {
+    overflow: auto;
+    scrollbar-width:auto;
+    scrollbar-color: #6c757d transparent;
+}
 
+#sidebar-bootstrap::-webkit-scrollbar {
+    width: 146px;
+}
+
+#sidebar-bootstrap::-webkit-scrollbar-thumb {
+    background-color: #6c757d;
+    border-radius: 10px;
+}
