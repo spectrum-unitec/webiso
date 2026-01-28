@@ -4,7 +4,7 @@
 <div class="login">
     <!-- BEGIN login-content -->
     <div class="login-content">
-        <form action="<?= route_to('login'); ?>" method="POST" name="login_form">
+        <form action="<?= base_url(route_to('login')); ?>" method="POST" name="login_form">
             <?= csrf_field() ?>
             <h1 class="text-center">Web ISO</h1>
             <div class="text-muted text-center mb-4">

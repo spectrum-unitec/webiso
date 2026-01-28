@@ -13,13 +13,13 @@ $seg2 = $segments[1] ?? '';
         <!-- BEGIN menu -->
         <div class="menu">
             <div class="menu-item  <?= nav_active_route('home') ?>">
-                <a href="<?= route_to('home'); ?>" class="menu-link">
+                <a href="<?= base_url(route_to('home')); ?>" class="menu-link">
                     <span class="menu-text">Home</span>
                 </a>
             </div>
             <?php if ($jenisOnly) : ?>
                 <div class="menu-item <?= nav_active_route('home.menus') ?>">
-                    <a href="<?= route_to('home.menus', $jenisOnly->slug); ?>" class="menu-link">
+                    <a href="<?= base_url(route_to('home.menus', $jenisOnly->slug)); ?>" class="menu-link">
                         <span class="menu-text"><?= $jenisOnly->jenis_document; ?></span>
                     </a>
                 </div>
@@ -34,7 +34,11 @@ $seg2 = $segments[1] ?? '';
 					<div class="menu-submenu">
 						<?php foreach ($jenisAll as $jenis) : ?>
 							<div class="menu-item <?= $seg1 === $jenis->slug && $seg2 === $row->kode_divisi ? 'active' : ''; ?>">
+<<<<<<< HEAD
 								<a href="<?= route_to('home.menus.divisi', $jenis->slug, $row->kode_divisi); ?>" class="menu-link">
+=======
+								<a href="<?= base_url(route_to('home.menus.divisi', $jenis->slug, $row->kode_divisi)); ?>" class="menu-link">
+>>>>>>> 4c4f00b (tes)
 									<span class="menu-text"><?= $jenis->jenis_document; ?></span>
 								</a>
 							</div>

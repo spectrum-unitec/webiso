@@ -30,8 +30,8 @@
                         <div class="col-6">
                             <?php
                             $url = ($segment1 === 'manual-mutu')
-                                ? route_to('home.menus', $jenisSlug)
-                                : route_to('home.menus.divisi', $jenisSlug, $segment2);
+                                ? base_url(route_to('home.menus', $jenisSlug))
+                                : base_url(route_to('home.menus.divisi', $jenisSlug, $segment2));
 
                             $url .= '?doc=' . $doc->slug;
                             ?>

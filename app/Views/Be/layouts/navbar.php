@@ -6,19 +6,19 @@
         <div class="menu">
             <div class="menu-header">Navigation</div>
             <div class="menu-item <?= nav_active_route('admin.masterdata'); ?>">
-                <a href="<?= route_to('admin.masterdata'); ?>" class="menu-link">
+                <a href="<?= base_url(route_to('admin.masterdata')); ?>" class="menu-link">
                     <span class="menu-icon"><i class="fa fa-database"></i></span>
                     <span class="menu-text">Master Data</span>
                 </a>
             </div>
             <div class="menu-item <?= nav_active_route('admin.mydoc'); ?>">
-                <a href="<?= route_to('admin.mydoc'); ?>" class="menu-link">
+                <a href="<?= base_url(route_to('admin.mydoc')); ?>" class="menu-link">
                     <span class="menu-icon"><i class="far fa-file-pdf"></i></span>
                     <span class="menu-text">My Document</span>
                 </a>
             </div>
             <div class="menu-item">
-                <a href="<?= route_to('logout'); ?>" class="menu-link">
+                <a href="<?= base_url(route_to('logout')); ?>" class="menu-link">
                     <span class="menu-icon"><i class="fa fa-sign-out-alt"></i></span>
                     <span class="menu-text">Log Out</span>
                 </a>

@@ -16,7 +16,7 @@
 
                 <div id="pdfWrapper">
                     <iframe
-                        src="<?= base_url('pdfjs/web/viewer.html') ?>?file=<?= route_to('pdf', $doc->id) ?>"
+                        src="<?= base_url('pdfjs/web/viewer.html') ?>?file=<?= base_url(route_to('pdf', $doc->id)) ?>"
                         sandbox="allow-scripts allow-same-origin"
                         width="100%"
                         height="600"
@@ -48,17 +48,17 @@
                             <?php
                             if ($segment2 !== '') {
                                 // route dengan divisi
-                                $baseUrl = route_to(
+                                $baseUrl = base_url(route_to(
                                     'home.menus.divisi',
                                     $jenisSlug,
                                     $segment2
-                                );
+                                ));
                             } else {
                                 // route tanpa divisi
-                                $baseUrl = route_to(
+                                $baseUrl = base_url(route_to(
                                     'home.menus',
                                     $jenisSlug
-                                );
+                                ));
                             }
 
                             $url    = $baseUrl . '?doc=' . $doc->slug;

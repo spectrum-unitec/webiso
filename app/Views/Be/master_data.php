@@ -185,7 +185,7 @@
                 <h5 class="modal-title" id="exampleModalLabel">Tambah Level Dokumen</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= route_to('admin.masterdata.store'); ?>" method="POST">
+            <form action="<?= base_url(route_to('admin.masterdata.store')); ?>" method="POST">
                 <?= csrf_field(); ?>
                 <div class="modal-body">
                     <div class="mb-3">
@@ -210,7 +210,7 @@
                 <h5 class="modal-title" id="exampleModalLabel">Tambah Jenis Dokumen</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= route_to('admin.masterdata.store'); ?>" method="POST">
+            <form action="<?= base_url(route_to('admin.masterdata.store')); ?>" method="POST">
                 <?= csrf_field(); ?>
                 <div class="modal-body">
                     <div class="mb-3">
@@ -235,7 +235,7 @@
                 <h5 class="modal-title" id="exampleModalLabel">Tambah Jenis Dokumen</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= route_to('admin.masterdata.store'); ?>" method="POST">
+            <form action="<?= base_url(route_to('admin.masterdata.store')); ?>" method="POST">
                 <?= csrf_field(); ?>
                 <div class="modal-body">
                     <div class="mb-3">

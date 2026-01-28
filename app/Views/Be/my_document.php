@@ -195,7 +195,7 @@
             processing: true,
             serverSide: true,
             ajax: {
-                url: "<?= route_to('admin.mydocument.data') ?>",
+                url: "<?= base_url(route_to('admin.mydocument.data')) ?>",
             },
             // columnDefs: [{
             //         targets: 1,
@@ -275,7 +275,7 @@
             const formData = new FormData(form);
 
             try {
-                const res = await fetch('<?= route_to('admin.mydocument.store') ?>', {
+                const res = await fetch('<?= base_url(route_to('admin.mydocument.store')) ?>', {
                     method: 'POST',
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
@@ -377,7 +377,7 @@
             const formData = new FormData(e.target);
 
             try {
-                const res = await fetch("<?= route_to('admin.mydocument.update') ?>", {
+                const res = await fetch("<?= base_url(route_to('admin.mydocument.update')) ?>", {
                     method: 'POST',
                     body: formData,
                     headers: {
@@ -412,7 +412,7 @@
             if (!confirm(`Hapus ${ids.length} data?`)) return;
 
             try {
-                const res = await fetch("<?= route_to('admin.mydocument.deleteBulk') ?>", {
+                const res = await fetch("<?= base_url(route_to('admin.mydocument.deleteBulk')) ?>", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
