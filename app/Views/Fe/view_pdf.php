@@ -81,3 +81,21 @@
     <!-- END col-10 -->
 </div>
 <?= $this->endSection(); ?>
+
+<?= $this->section('pageScripts'); ?>
+<script>
+    const sidebar = document.getElementById('sidebar-bootstrap');
+
+    sidebar.addEventListener('scroll', () => {
+        localStorage.setItem('sidebarScrollTop', sidebar.scrollTop);
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const scrollTop = localStorage.getItem('sidebarScrollTop');
+
+        if (scrollTop !== null) {
+            sidebar.scrollTop = scrollTop;
+        }
+    });
+</script>
+<?= $this->endSection(); ?>
