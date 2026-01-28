@@ -34,11 +34,7 @@ $seg2 = $segments[1] ?? '';
 					<div class="menu-submenu">
 						<?php foreach ($jenisAll as $jenis) : ?>
 							<div class="menu-item <?= $seg1 === $jenis->slug && $seg2 === $row->kode_divisi ? 'active' : ''; ?>">
-<<<<<<< HEAD
-								<a href="<?= route_to('home.menus.divisi', $jenis->slug, $row->kode_divisi); ?>" class="menu-link">
-=======
 								<a href="<?= base_url(route_to('home.menus.divisi', $jenis->slug, $row->kode_divisi)); ?>" class="menu-link">
->>>>>>> 4c4f00b (tes)
 									<span class="menu-text"><?= $jenis->jenis_document; ?></span>
 								</a>
 							</div>
