@@ -40,7 +40,7 @@
                                 <div class="card mb-2">
                                     <div class="card-body d-flex align-items-center gap-2">
                                         <img src="<?= base_url('assets/img/pdf.png') ?>" width="35" alt="PDF">
-                                        <span><?= esc($doc->nama_document) ?></span>
+                                        <span class="fw-bold"><?= esc($doc->nama_document) ?> <div class="badge bg-primary"><?= esc($doc->no_document); ?></div></span>
                                     </div>
                                 </div>
                             </a>
