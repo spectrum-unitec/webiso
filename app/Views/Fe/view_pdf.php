@@ -17,7 +17,6 @@
                 <div id="pdfWrapper">
                     <iframe
                         src="<?= base_url('pdfjs/web/viewer.html') ?>?file=<?= base_url(route_to('pdf', $doc->id)) ?>"
-                        sandbox="allow-scripts allow-same-origin"
                         width="100%"
                         height="600"
                         style="border:none">

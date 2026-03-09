@@ -142,7 +142,7 @@ class Home extends BaseController
             ->setHeader('X-Content-Type-Options', 'nosniff')
             ->setHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
             ->setHeader('Pragma', 'no-cache')
-            ->setHeader('Accept-Ranges', 'none') // ⛔ penting untuk IDM
+            ->setHeader('Accept-Ranges', 'none')
             ->setBody(file_get_contents($path));
     }
 }
