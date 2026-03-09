@@ -32906,6 +32906,7 @@ body .note-modal-backdrop {
     background-color: #ffffff;
     border-radius: 5px;
     padding-bottom: 6px !important;
+    margin-bottom: 3px;
 }
 
 .nav-link:hover {
