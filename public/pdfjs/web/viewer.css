@@ -2663,3 +2663,7 @@ html[dir="rtl"] #documentPropertiesOverlay .row > * {
     display: none;
   }
 }
+
+#download,#print,#secondaryOpenFile {
+  display: none !important;
+}
