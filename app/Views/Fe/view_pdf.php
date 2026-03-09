@@ -65,7 +65,7 @@
                             ?>
 
                             <a class="nav-link <?= $active ?>" href="<?= $url ?>">
-                                <?= esc($doc->nama_document) ?>
+                                <?= esc($doc->nama_document) ?> <span class="badge bg-primary"><?= esc($doc->no_document); ?></span>
                             </a>
                         <?php endforeach; ?>
                     </nav>
