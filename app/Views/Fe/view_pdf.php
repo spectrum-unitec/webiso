@@ -31,6 +31,7 @@
                 <nav id="sidebar-bootstrap" class="navbar navbar-sticky d-none d-xl-block">
                     <nav class="nav">
                         <?php
+                        $no = 1;
                         $uri = current_url(true);
 
                         $segment1 = $uri->getSegment(1, '');
@@ -65,7 +66,7 @@
                             ?>
 
                             <a class="nav-link <?= $active ?>" href="<?= $url ?>">
-                                <?= esc($doc->nama_document) ?> <span class="badge bg-primary"><?= esc($doc->no_document); ?></span>
+                               <?= $no++; ?>. <?= esc($doc->nama_document) ?> <span class="badge bg-primary"><?= esc($doc->no_document); ?></span>
                             </a>
                         <?php endforeach; ?>
                     </nav>
