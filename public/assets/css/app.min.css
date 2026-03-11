@@ -26125,7 +26125,7 @@ fieldset:disabled .btn {
 }
 
 .app-header .menu .menu-search {
-    margin: 0 auto 0 3.125rem;
+    /* margin: 0 auto 0 3.125rem; */
     position: relative;
     max-width: 47.5rem;
     flex: 1

@@ -66,7 +66,8 @@
                             ?>
 
                             <a class="nav-link <?= $active ?>" href="<?= $url ?>">
-                               <?= $no++; ?>. <?= esc($doc->nama_document) ?> <span class="badge bg-primary"><?= esc($doc->no_document); ?></span>
+                                <span class="badge bg-primary"><?= esc($doc->no_document); ?></span>
+                                <?= esc($doc->nama_document) ?>
                             </a>
                         <?php endforeach; ?>
                     </nav>
