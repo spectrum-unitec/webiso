@@ -8,39 +8,40 @@
 <?= $this->section('content'); ?>
 
 
-
-<div class="row justify-content-center">
-    <div class="col-xl-12">
-        <div class="mb-2">
-            <h1 class="page-header">
-                My Document
-            </h1>
-            <hr class="mb-4">
-            <div class="d-flex justify-content-end gap-2">
-                <button id="btnDeleteSelected" class="btn btn-danger">
-                    <i class="fa fa-trash"></i> Bulk Delete
-                </button>
-                <button class="btn btn-primary" data-bs-target="#createDocument" data-bs-toggle="modal"><i class="far fa-plus"></i> Buat Dokumen</button>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-xl-12">
+            <div class="mb-2">
+                <h1 class="page-header">
+                    My Document
+                </h1>
+                <hr class="mb-4">
+                <div class="d-flex justify-content-end gap-2">
+                    <button id="btnDeleteSelected" class="btn btn-danger">
+                        <i class="fa fa-trash"></i> Bulk Delete
+                    </button>
+                    <button class="btn btn-primary" data-bs-target="#createDocument" data-bs-toggle="modal"><i class="far fa-plus"></i> Buat Dokumen</button>
+                </div>
+    
             </div>
-
-        </div>
-        <div class="card">
-            <div class="card-body">
-                <table id="datatableDefault" class="table">
-                    <thead>
-                        <tr>
-                            <th>Bulk</th>
-                            <th>No</th>
-                            <th>Level</th>
-                            <th>No Dokumen</th>
-                            <th>Jenis Dokumen</th>
-                            <th>Nama Dokumen</th>
-                            <th>Di Buat</th>
-                            <th>Di Update</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                </table>
+            <div class="card">
+                <div class="card-body">
+                    <table id="datatableDefault" class="table">
+                        <thead>
+                            <tr>
+                                <th>Bulk</th>
+                                <th>No</th>
+                                <th>Level</th>
+                                <th>No Dokumen</th>
+                                <th>Jenis Dokumen</th>
+                                <th>Nama Dokumen</th>
+                                <th>Di Buat</th>
+                                <th>Di Update</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

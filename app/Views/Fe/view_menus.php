@@ -17,36 +17,51 @@
                 <hr class="mb-4">
 
                 <div class="row">
-                    <?php
-                    $segment1 = current_url(true)->getSegment(1, '');
-                    $segment2 = current_url(true)->getSegment(2, '');
 
-                    $jenisSlug = $jenisDoc
-                        ? $jenisDoc->slug
-                        : $jenisOnly->slug;
-                    ?>
+                    <?php if (empty($docs)) : ?>
 
-                    <?php foreach ($docs as $doc) : ?>
-                        <div class="col-6">
-                            <?php
-                            $url = ($segment1 === 'manual-mutu')
-                                ? base_url(route_to('home.menus', $jenisSlug))
-                                : base_url(route_to('home.menus.divisi', $jenisSlug, $segment2));
-
-                            $url .= '?doc=' . $doc->slug;
-                            ?>
-
-                            <a href="<?= esc($url) ?>" class="link-doc">
-                                <div class="card mb-2">
-                                    <div class="card-body d-flex align-items-center gap-2">
-                                        <img src="<?= base_url('assets/img/pdf.png') ?>" width="35" alt="PDF">
-                                        <div class="badge bg-primary"><?= esc($doc->no_document); ?></div>
-                                        <span class="fw-bold"><?= esc($doc->nama_document) ?></span>
-                                    </div>
-                                </div>
-                            </a>
+                        <div class="col-12">
+                            <div class="alert alert-warning text-center fw-bold">
+                                <div><i class=" fa fa-file-alt fs-1 mb-1"></i></div>
+                                Tidak ada dokumen
+                            </div>
                         </div>
-                    <?php endforeach ?>
+
+                    <?php else : ?>
+
+                        <?php
+                        $segment1 = current_url(true)->getSegment(1, '');
+                        $segment2 = current_url(true)->getSegment(2, '');
+
+                        $jenisSlug = $jenisDoc
+                            ? $jenisDoc->slug
+                            : $jenisOnly->slug;
+                        ?>
+
+                        <?php foreach ($docs as $doc) : ?>
+                            <div class="col-6">
+                                <?php
+                                $url = ($segment1 === 'manual-mutu')
+                                    ? base_url(route_to('home.menus', $jenisSlug))
+                                    : base_url(route_to('home.menus.divisi', $jenisSlug, $segment2));
+
+                                $url .= '?doc=' . $doc->slug;
+                                ?>
+
+                                <a href="<?= esc($url) ?>" class="link-doc">
+                                    <div class="card mb-2">
+                                        <div class="card-body d-flex align-items-center gap-2">
+                                            <img src="<?= base_url('assets/img/pdf.png') ?>" width="35" alt="PDF">
+                                            <div class="badge bg-primary"><?= esc($doc->no_document); ?></div>
+                                            <span class="fw-bold"><?= esc($doc->nama_document) ?></span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        <?php endforeach ?>
+
+                    <?php endif; ?>
+
                 </div>
 
             </div>
