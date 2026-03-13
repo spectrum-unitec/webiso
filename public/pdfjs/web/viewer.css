@@ -2776,3 +2776,7 @@ html[dir="rtl"] #documentPropertiesOverlay .row > * {
     display: none;
   }
 }
+
+#download, #print,#openFile {
+  display: none !important;
+}
