@@ -54,4 +54,10 @@ class MasterData extends BaseController
         }
         return redirect()->route('admin.masterdata');
     }
+
+    public function delete($id)
+    {
+        $this->modalDivisi->delete($id);
+        return redirect()->route('admin.masterdata')->with('success', 'Data berhasil di hapus');
+    }
 }

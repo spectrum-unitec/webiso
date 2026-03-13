@@ -118,6 +118,14 @@
                                         <button class="btn btn-primary" data-bs-target="#createModalDivisi" data-bs-toggle="modal"><i class="far fa-plus"></i> Tambah</button>
                                     </div>
                                 </div>
+
+                                <?php if (session()->getFlashdata('success')) : ?>
+                                    <div class="alert alert-success alert-dismissible fade show">
+                                        <?= session()->getFlashdata('success') ?>
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                <?php endif; ?>
+
                                 <div class="card">
                                     <div class="card-body">
                                         <table id="datatableDefault" class="table">
@@ -141,7 +149,14 @@
                                                         <td width="170px"><?= $row->created_at; ?></td>
                                                         <td width="120px">
                                                             <a href="" class="btn btn-sm btn-warning">Edit</a>
-                                                            <a href="" class="btn btn-sm btn-danger">Hapus</a>
+                                                            <form action="<?= base_url(route_to('admin.masterdata.delete', $row->id)); ?>" method="post" style="display:inline;">
+                                                                <?= csrf_field() ?>
+                                                                <input type="hidden" name="_method" value="DELETE">
+                                                                <button type="submit" class="btn btn-sm btn-danger"
+                                                                    onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                                                    Hapus
+                                                                </button>
+                                                            </form>
                                                         </td>
                                                     </tr>
                                                 <?php endforeach; ?>

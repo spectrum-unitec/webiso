@@ -21,6 +21,7 @@ $routes->group('administrator', ['namespace' => 'App\Controllers\Be', 'filter' =
 
     $routes->group('master-data', function ($routes) {
         $routes->get('/', 'MasterData::index', ['as' => 'admin.masterdata']);
+        $routes->delete('delete/(:num)', 'MasterData::delete/$1', ['as' => 'admin.masterdata.delete']);
         $routes->post('store', 'MasterData::store', ['as' => 'admin.masterdata.store']);
     });
 });
