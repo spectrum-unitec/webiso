@@ -94,6 +94,11 @@
 <?= $this->section('pageScripts'); ?>
 
 <script>
+    let jenis = "<?= $segment1 ?>";
+    let divisi = "<?= $segment2 ?>";
+</script>
+
+<script>
     $(function() {
 
         let xhr = null;
@@ -101,9 +106,6 @@
         let offset = 0;
         let loading = false;
         let finished = false;
-
-        let jenis = "<?= $segment1 ?>";
-        let divisi = "<?= $segment2 ?>";
 
         function loadData(reset = false) {
 
@@ -124,13 +126,6 @@
 
             loading = true;
 
-            // 🔥 loading indicator
-            $('#searchDropdown').append(`
-            <div id="loadingItem" class="text-center p-2">
-                <i class="fa fa-spinner fa-spin"></i> Loading...
-            </div>
-        `).show();
-
             if (xhr) xhr.abort();
 
             xhr = $.ajax({
@@ -144,8 +139,6 @@
                     offset: offset
                 },
                 success: function(res) {
-
-                    $('#loadingItem').remove();
 
                     // 🔥 kalau kosong & pertama kali
                     if (res.length === 0 && offset === 0) {
@@ -166,22 +159,20 @@
 
                     let html = '';
 
-                    res.forEach(function(item) {
-                        html += `
-                        <a href="${item.url}" class="list-group-item list-group-item-action">
-                            <div class="fw-bold">${item.no_document}</div>
-                            <small>${item.nama_document}</small>
-                        </a>
-                    `;
-                    });
+                    if (res.length > 0) {
+                        res.forEach(function(item) {
+                            html += `
+                            <a href="${item.url}" class="list-group-item list-group-item-action">
+                                <div class="fw-bold">${item.no_document}</div>
+                                <small>${item.nama_document}</small>
+                            </a>
+                        `;
+                        });
+                    }
 
                     $('#searchDropdown').append(html).show();
 
                     offset += res.length;
-                    loading = false;
-                },
-                error: function() {
-                    $('#loadingItem').remove();
                     loading = false;
                 }
             });
@@ -192,22 +183,16 @@
             timer = setTimeout(() => loadData(true), 300);
         }
 
-        // 🔥 realtime search
+        // ketik → reset data
         $('#searchDoc').on('keyup', debounce);
 
-        // 🔥 infinite scroll
+        // scroll dropdown
         $('#searchDropdown').on('scroll', function() {
-            let el = this;
+
+            let el = $(this)[0];
 
             if (el.scrollTop + el.clientHeight >= el.scrollHeight - 10) {
-                loadData();
-            }
-        });
-
-        // 🔥 klik luar → hide dropdown
-        $(document).on('click', function(e) {
-            if (!$(e.target).closest('#searchDoc, #searchDropdown').length) {
-                $('#searchDropdown').hide();
+                loadData(); // load next
             }
         });
 
