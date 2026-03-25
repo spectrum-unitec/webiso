@@ -107,7 +107,7 @@
 
         function loadData(reset = false) {
 
-            if (loading || finished) return;
+            if (loading) return;
 
             let query = $('#searchDoc').val();
 
@@ -140,18 +140,16 @@
                 },
                 success: function(res) {
 
-                    let html = '';
-
                     if (res.length > 0) {
 
                         let html = '';
                         res.forEach(function(item) {
                             html += `
-            <a href="${item.url}" class="list-group-item list-group-item-action">
-                <div class="fw-bold">${item.no_document}</div>
-                <small>${item.nama_document}</small>
-            </a>
-        `;
+                <a href="${item.url}" class="list-group-item list-group-item-action">
+                    <div class="fw-bold">${item.no_document}</div>
+                    <small>${item.nama_document}</small>
+                </a>
+            `;
                         });
 
                         $('#searchDropdown').append(html).show();
@@ -160,15 +158,11 @@
                     } else {
 
                         if (offset === 0) {
-                            // kondisi pertama: tidak ada data
                             $('#searchDropdown')
                                 .html(`<div class="list-group-item text-muted">Tidak ditemukan</div>`)
                                 .show();
-
-                            // ❗ JANGAN set finished di sini
                         } else {
-                            // kondisi scroll berikutnya: data habis
-                            finished = true;
+                            finished = true; // hanya saat scroll habis
                         }
                     }
                 },
@@ -186,7 +180,34 @@
             timer = setTimeout(() => loadData(true), 300);
         }
 
-        $('#searchDoc').on('keyup', debounce);
+        function resetState() {
+            offset = 0;
+            finished = false;
+            loading = false;
+
+            if (xhr) {
+                xhr.abort();
+                xhr = null;
+            }
+
+            $('#searchDropdown').html('').hide();
+        }
+
+        $('#searchDoc').on('keyup', function() {
+
+            let query = $(this).val();
+
+            clearTimeout(timer);
+
+            if (query.length < 2) {
+                resetState(); // ✅ reset total
+                return;
+            }
+
+            resetState(); // ✅ reset sebelum search baru
+
+            timer = setTimeout(() => loadData(true), 300);
+        });
 
         $('#searchDropdown').on('scroll', function() {
 
