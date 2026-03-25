@@ -112,7 +112,9 @@ class Home extends BaseController
             'jenisAll',
             'jenisOnly',
             'docs',
-            'jenisDoc'
+            'jenisDoc',
+            'segment1',
+            'segment2'
         ));
     }
 
@@ -144,5 +146,57 @@ class Home extends BaseController
             ->setHeader('Pragma', 'no-cache')
             ->setHeader('Accept-Ranges', 'none')
             ->setBody(file_get_contents($path));
+    }
+
+    public function searchDoc()
+    {
+        $keyword   = $this->request->getGet('q');
+        $jenisSlug = $this->request->getGet('jenis');
+        $divisiKode = $this->request->getGet('divisi');
+
+        $builder = $this->docModel;
+
+        if ($keyword) {
+            $builder->groupStart()
+                ->like('nama_document', $keyword)
+                ->orLike('no_document', $keyword)
+                ->groupEnd();
+        }
+
+        // jenis
+        if ($jenisSlug) {
+            $jenis = $this->jenisModel->where('slug', $jenisSlug)->first();
+            if ($jenis) {
+                $builder->where('jenis_id', $jenis->id);
+            }
+        }
+
+        // divisi
+        if ($divisiKode) {
+            $divisi = $this->divisiModel->where('kode_divisi', $divisiKode)->first();
+            if ($divisi) {
+                $builder->where('divisi_id', $divisi->id);
+            }
+        }
+
+        $docs = $builder->limit(10)->find();
+
+        // format JSON
+        $result = [];
+
+        foreach ($docs as $doc) {
+
+            $url = !empty($divisiKode)
+                ? base_url(route_to('home.menus.divisi', $jenisSlug, $divisiKode))
+                : base_url(route_to('home.menus', $jenisSlug));
+
+            $result[] = [
+                'no_document'   => $doc->no_document,
+                'nama_document' => $doc->nama_document,
+                'url'           => $url . '?doc=' . $doc->slug
+            ];
+        }
+
+        return $this->response->setJSON($result);
     }
 }

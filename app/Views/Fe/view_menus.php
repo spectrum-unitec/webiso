@@ -4,12 +4,14 @@
 
 <!-- BEGIN row -->
 <div class="row justify-content-center">
+
     <!-- BEGIN col-10 -->
     <div class="col-xl-10">
         <!-- BEGIN row -->
         <div class="row justify-content-center">
             <!-- BEGIN col-9 -->
             <div class="col-xl-10">
+
                 <h1 class="page-header">
                     Daftar Dokumen <small><?= empty($jenisDoc) ? $jenisOnly->jenis_document : $jenisDoc->jenis_document ?></small>
                 </h1>
@@ -28,6 +30,17 @@
                         </div>
 
                     <?php else : ?>
+
+                        <div class="position-relative mb-2">
+                            <div class="input-group">
+                                <span class="input-group-text" style="background-color: white;">
+                                    <i class="fa fa-search"></i>
+                                </span>
+                                <input type="text" id="searchDoc" class="form-control" placeholder="Cari berdasarkan nama atau nomor dokumen..">
+                            </div>
+
+                            <div id="searchDropdown" class="list-group shadow position-absolute w-100 mt-1" style="z-index: 1000; display:none;"></div>
+                        </div>
 
                         <?php
                         $segment1 = current_url(true)->getSegment(1, '');
@@ -75,5 +88,81 @@
     <!-- END col-10 -->
 </div>
 <!-- END row -->
+
+<?= $this->endSection(); ?>
+
+<?= $this->section('pageScripts'); ?>
+
+<script>
+    let jenis = "<?= $segment1 ?>";
+    let divisi = "<?= $segment2 ?>";
+</script>
+
+<script>
+    $(function() {
+
+        let xhr = null;
+        let timer;
+
+        function loadData() {
+
+            let query = $('#searchDoc').val();
+            console.log(query);
+
+
+            if (query.length < 2) {
+                $('#searchDropdown').hide();
+                return;
+            }
+
+            if (xhr) xhr.abort();
+
+            xhr = $.ajax({
+                url: "<?= base_url(route_to('search_doc')) ?>",
+                method: "GET",
+                dataType: "json",
+                data: {
+                    q: query,
+                    jenis: jenis,
+                    divisi: divisi
+                },
+                success: function(res) {
+
+                    let html = '';
+
+                    if (res.length > 0) {
+                        res.forEach(function(item) {
+                            html += `
+                            <a href="${item.url}" class="list-group-item list-group-item-action">
+                                <div class="fw-bold">${item.no_document}</div>
+                                <small>${item.nama_document}</small>
+                            </a>
+                        `;
+                        });
+                    } else {
+                        html = `<div class="list-group-item text-muted">Tidak ditemukan</div>`;
+                    }
+
+                    $('#searchDropdown').html(html).show();
+                }
+            });
+        }
+
+        function debounce() {
+            clearTimeout(timer);
+            timer = setTimeout(loadData, 250);
+        }
+
+        $('#searchDoc').on('keyup', debounce);
+
+        // klik luar → hide
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('#searchDoc').length) {
+                $('#searchDropdown').hide();
+            }
+        });
+
+    });
+</script>
 
 <?= $this->endSection(); ?>

@@ -18,14 +18,6 @@
              </a> -->
     </div>
 
-    <div class="menu">
-        <form class="menu-search" method="POST" name="header_search_form">
-            <div class="menu-search-icon"><i class="fa fa-search"></i></div>
-            <div class="menu-search-input">
-                <input type="text" class="form-control" placeholder="Cari berdasarkan nama atau nomor dokumen..">
-            </div>
-        </form>
-    </div>
 
     <!-- END brand -->
     <div style="margin-right: 10px;">
