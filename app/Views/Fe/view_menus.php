@@ -159,7 +159,7 @@
 
                     let html = '';
 
-                    if (res.length > 0) {
+                
                         res.forEach(function(item) {
                             html += `
                             <a href="${item.url}" class="list-group-item list-group-item-action">
@@ -168,7 +168,7 @@
                             </a>
                         `;
                         });
-                    }
+                    
 
                     $('#searchDropdown').append(html).show();
 
