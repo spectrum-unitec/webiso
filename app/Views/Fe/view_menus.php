@@ -39,7 +39,7 @@
                                 <input type="text" id="searchDoc" class="form-control" placeholder="Cari berdasarkan nama atau nomor dokumen..">
                             </div>
 
-                            <div id="searchDropdown" class="list-group shadow position-absolute w-100 mt-1" style="z-index: 1000; display:none; height:380px; overflow:auto;"></div>
+                            <div id="searchDropdown" class="list-group shadow position-absolute w-100 mt-1" style="z-index: 1000; display:none; max-height:380px; overflow:auto;"></div>
                         </div>
 
                         <?php
