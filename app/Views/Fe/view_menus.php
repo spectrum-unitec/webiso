@@ -94,11 +94,6 @@
 <?= $this->section('pageScripts'); ?>
 
 <script>
-    let jenis = "<?= $segment1 ?>";
-    let divisi = "<?= $segment2 ?>";
-</script>
-
-<script>
     $(function() {
 
         let xhr = null;
@@ -107,6 +102,9 @@
         let loading = false;
         let finished = false;
 
+        let jenis = "<?= $segment1 ?>";
+        let divisi = "<?= $segment2 ?>";
+
         function loadData(reset = false) {
 
             if (loading || finished) return;
@@ -114,7 +112,9 @@
             let query = $('#searchDoc').val();
 
             if (query.length < 2) {
-                $('#searchDropdown').hide();
+                $('#searchDropdown').hide().html('');
+                offset = 0;
+                finished = false;
                 return;
             }
 
@@ -151,13 +151,23 @@
                             </a>
                         `;
                         });
+
+                        $('#searchDropdown').append(html).show();
+                        offset += res.length;
+
                     } else {
-                        html = `<div class="list-group-item text-muted">Tidak ditemukan</div>`;
+                        if (offset === 0) {
+                            $('#searchDropdown')
+                                .html(`<div class="list-group-item text-muted">Tidak ditemukan</div>`)
+                                .show();
+                        }
+                        finished = true;
                     }
-
-                    $('#searchDropdown').append(html).show();
-
-                    offset += res.length;
+                },
+                error: function() {
+                    console.log('Request error');
+                },
+                complete: function() {
                     loading = false;
                 }
             });
@@ -168,16 +178,14 @@
             timer = setTimeout(() => loadData(true), 300);
         }
 
-        // ketik → reset data
         $('#searchDoc').on('keyup', debounce);
 
-        // scroll dropdown
         $('#searchDropdown').on('scroll', function() {
 
-            let el = $(this)[0];
+            let el = this;
 
             if (el.scrollTop + el.clientHeight >= el.scrollHeight - 10) {
-                loadData(); // load next
+                loadData();
             }
         });
 
