@@ -143,25 +143,33 @@
                     let html = '';
 
                     if (res.length > 0) {
+
+                        let html = '';
                         res.forEach(function(item) {
                             html += `
-                            <a href="${item.url}" class="list-group-item list-group-item-action">
-                                <div class="fw-bold">${item.no_document}</div>
-                                <small>${item.nama_document}</small>
-                            </a>
-                        `;
+            <a href="${item.url}" class="list-group-item list-group-item-action">
+                <div class="fw-bold">${item.no_document}</div>
+                <small>${item.nama_document}</small>
+            </a>
+        `;
                         });
 
                         $('#searchDropdown').append(html).show();
                         offset += res.length;
 
                     } else {
+
                         if (offset === 0) {
+                            // kondisi pertama: tidak ada data
                             $('#searchDropdown')
                                 .html(`<div class="list-group-item text-muted">Tidak ditemukan</div>`)
                                 .show();
+
+                            // ❗ JANGAN set finished di sini
+                        } else {
+                            // kondisi scroll berikutnya: data habis
+                            finished = true;
                         }
-                        finished = true;
                     }
                 },
                 error: function() {
