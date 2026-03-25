@@ -129,7 +129,7 @@
             if (xhr) xhr.abort();
 
             xhr = $.ajax({
-                url: "<?= base_url('search-doc') ?>",
+                url: "<?= base_url(route_to('search_doc')) ?>",
                 method: "GET",
                 dataType: "json",
                 data: {
@@ -140,21 +140,20 @@
                 },
                 success: function(res) {
 
-                    if (res.length === 0) {
-                        finished = true;
-                        return;
-                    }
-
                     let html = '';
 
-                    res.forEach(function(item) {
-                        html += `
-                        <a href="${item.url}" class="list-group-item list-group-item-action">
-                            <div class="fw-bold">${item.no_document}</div>
-                            <small>${item.nama_document}</small>
-                        </a>
-                    `;
-                    });
+                    if (res.length > 0) {
+                        res.forEach(function(item) {
+                            html += `
+                            <a href="${item.url}" class="list-group-item list-group-item-action">
+                                <div class="fw-bold">${item.no_document}</div>
+                                <small>${item.nama_document}</small>
+                            </a>
+                        `;
+                        });
+                    } else {
+                        html = `<div class="list-group-item text-muted">Tidak ditemukan</div>`;
+                    }
 
                     $('#searchDropdown').append(html).show();
 
