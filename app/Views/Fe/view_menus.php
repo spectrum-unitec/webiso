@@ -126,12 +126,6 @@
 
             loading = true;
 
-            $('#searchDropdown').append(`
-    <div id="loadingItem" class="text-center p-2">
-        <i class="fa fa-spinner fa-spin"></i> Loading...
-    </div>
-`);
-
             if (xhr) xhr.abort();
 
             xhr = $.ajax({
