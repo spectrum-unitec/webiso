@@ -150,18 +150,23 @@ class Home extends BaseController
 
     public function searchDoc()
     {
-        $keyword   = $this->request->getGet('q');
-        $jenisSlug = $this->request->getGet('jenis');
+        $keyword    = $this->request->getGet('q');
+        $jenisSlug  = $this->request->getGet('jenis');
         $divisiKode = $this->request->getGet('divisi');
+        $offset     = (int) ($this->request->getGet('offset') ?? 0);
+
+        $limit = 10;
+
+        if (!$keyword) {
+            return $this->response->setJSON([]);
+        }
 
         $builder = $this->docModel;
 
-        if ($keyword) {
-            $builder->groupStart()
-                ->like('nama_document', $keyword)
-                ->orLike('no_document', $keyword)
-                ->groupEnd();
-        }
+        $builder->groupStart()
+            ->like('nama_document', $keyword)
+            ->orLike('no_document', $keyword)
+            ->groupEnd();
 
         // jenis
         if ($jenisSlug) {
@@ -179,21 +184,22 @@ class Home extends BaseController
             }
         }
 
-        $docs = $builder->limit(10)->find();
+        $docs = $builder
+            ->orderBy('nama_document', 'ASC')
+            ->findAll($limit, $offset);
 
-        // format JSON
         $result = [];
 
         foreach ($docs as $doc) {
 
-            $url = !empty($divisiKode)
-                ? base_url(route_to('home.menus.divisi', $jenisSlug, $divisiKode))
-                : base_url(route_to('home.menus', $jenisSlug));
+            $route = !empty($divisiKode)
+                ? route_to('home.menus.divisi', $jenisSlug, $divisiKode)
+                : route_to('home.menus', $jenisSlug);
 
             $result[] = [
                 'no_document'   => $doc->no_document,
                 'nama_document' => $doc->nama_document,
-                'url'           => $url . '?doc=' . $doc->slug
+                'url'           => base_url($route) . '?doc=' . $doc->slug
             ];
         }
 

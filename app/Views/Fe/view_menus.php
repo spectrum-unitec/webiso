@@ -103,62 +103,88 @@
 
         let xhr = null;
         let timer;
+        let offset = 0;
+        let loading = false;
+        let finished = false;
 
-        function loadData() {
+        function loadData(reset = false) {
+
+            if (loading || finished) return;
 
             let query = $('#searchDoc').val();
-            console.log(query);
-
 
             if (query.length < 2) {
                 $('#searchDropdown').hide();
                 return;
             }
 
+            if (reset) {
+                offset = 0;
+                finished = false;
+                $('#searchDropdown').html('');
+            }
+
+            loading = true;
+
+            $('#searchDropdown').append(`
+    <div id="loadingItem" class="text-center p-2">
+        <i class="fa fa-spinner fa-spin"></i> Loading...
+    </div>
+`);
+
             if (xhr) xhr.abort();
 
             xhr = $.ajax({
-                url: "<?= base_url(route_to('search_doc')) ?>",
+                url: "<?= base_url('search-doc') ?>",
                 method: "GET",
                 dataType: "json",
                 data: {
                     q: query,
                     jenis: jenis,
-                    divisi: divisi
+                    divisi: divisi,
+                    offset: offset
                 },
                 success: function(res) {
 
-                    let html = '';
-
-                    if (res.length > 0) {
-                        res.forEach(function(item) {
-                            html += `
-                            <a href="${item.url}" class="list-group-item list-group-item-action">
-                                <div class="fw-bold">${item.no_document}</div>
-                                <small>${item.nama_document}</small>
-                            </a>
-                        `;
-                        });
-                    } else {
-                        html = `<div class="list-group-item text-muted">Tidak ditemukan</div>`;
+                    if (res.length === 0) {
+                        finished = true;
+                        return;
                     }
 
-                    $('#searchDropdown').html(html).show();
+                    let html = '';
+
+                    res.forEach(function(item) {
+                        html += `
+                        <a href="${item.url}" class="list-group-item list-group-item-action">
+                            <div class="fw-bold">${item.no_document}</div>
+                            <small>${item.nama_document}</small>
+                        </a>
+                    `;
+                    });
+
+                    $('#searchDropdown').append(html).show();
+
+                    offset += res.length;
+                    loading = false;
                 }
             });
         }
 
         function debounce() {
             clearTimeout(timer);
-            timer = setTimeout(loadData, 250);
+            timer = setTimeout(() => loadData(true), 300);
         }
 
+        // ketik → reset data
         $('#searchDoc').on('keyup', debounce);
 
-        // klik luar → hide
-        $(document).on('click', function(e) {
-            if (!$(e.target).closest('#searchDoc').length) {
-                $('#searchDropdown').hide();
+        // scroll dropdown
+        $('#searchDropdown').on('scroll', function() {
+
+            let el = $(this)[0];
+
+            if (el.scrollTop + el.clientHeight >= el.scrollHeight - 10) {
+                loadData(); // load next
             }
         });
 
