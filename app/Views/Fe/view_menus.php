@@ -94,11 +94,6 @@
 <?= $this->section('pageScripts'); ?>
 
 <script>
-    let jenis = "<?= $segment1 ?>";
-    let divisi = "<?= $segment2 ?>";
-</script>
-
-<script>
     $(function() {
 
         let xhr = null;
@@ -106,6 +101,9 @@
         let offset = 0;
         let loading = false;
         let finished = false;
+
+        let jenis = "<?= $segment1 ?>";
+        let divisi = "<?= $segment2 ?>";
 
         function loadData(reset = false) {
 
@@ -126,6 +124,13 @@
 
             loading = true;
 
+            // 🔥 loading indicator
+            $('#searchDropdown').append(`
+            <div id="loadingItem" class="text-center p-2">
+                <i class="fa fa-spinner fa-spin"></i> Loading...
+            </div>
+        `).show();
+
             if (xhr) xhr.abort();
 
             xhr = $.ajax({
@@ -140,24 +145,43 @@
                 },
                 success: function(res) {
 
+                    $('#loadingItem').remove();
+
+                    // 🔥 kalau kosong & pertama kali
+                    if (res.length === 0 && offset === 0) {
+                        $('#searchDropdown')
+                            .html('<div class="list-group-item text-muted">Tidak ditemukan</div>')
+                            .show();
+                        finished = true;
+                        loading = false;
+                        return;
+                    }
+
+                    // 🔥 kalau habis
+                    if (res.length === 0) {
+                        finished = true;
+                        loading = false;
+                        return;
+                    }
+
                     let html = '';
 
-                    if (res.length > 0) {
-                        res.forEach(function(item) {
-                            html += `
-                            <a href="${item.url}" class="list-group-item list-group-item-action">
-                                <div class="fw-bold">${item.no_document}</div>
-                                <small>${item.nama_document}</small>
-                            </a>
-                        `;
-                        });
-                    } else {
-                        html = `<div class="list-group-item text-muted">Tidak ditemukan</div>`;
-                    }
+                    res.forEach(function(item) {
+                        html += `
+                        <a href="${item.url}" class="list-group-item list-group-item-action">
+                            <div class="fw-bold">${item.no_document}</div>
+                            <small>${item.nama_document}</small>
+                        </a>
+                    `;
+                    });
 
                     $('#searchDropdown').append(html).show();
 
                     offset += res.length;
+                    loading = false;
+                },
+                error: function() {
+                    $('#loadingItem').remove();
                     loading = false;
                 }
             });
@@ -168,16 +192,22 @@
             timer = setTimeout(() => loadData(true), 300);
         }
 
-        // ketik → reset data
+        // 🔥 realtime search
         $('#searchDoc').on('keyup', debounce);
 
-        // scroll dropdown
+        // 🔥 infinite scroll
         $('#searchDropdown').on('scroll', function() {
-
-            let el = $(this)[0];
+            let el = this;
 
             if (el.scrollTop + el.clientHeight >= el.scrollHeight - 10) {
-                loadData(); // load next
+                loadData();
+            }
+        });
+
+        // 🔥 klik luar → hide dropdown
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('#searchDoc, #searchDropdown').length) {
+                $('#searchDropdown').hide();
             }
         });
 
