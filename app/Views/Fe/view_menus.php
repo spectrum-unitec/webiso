@@ -140,26 +140,9 @@
                 },
                 success: function(res) {
 
-                    // 🔥 kalau kosong & pertama kali
-                    if (res.length === 0 && offset === 0) {
-                        $('#searchDropdown')
-                            .html('<div class="list-group-item text-muted">Tidak ditemukan</div>')
-                            .show();
-                        finished = true;
-                        loading = false;
-                        return;
-                    }
-
-                    // 🔥 kalau habis
-                    if (res.length === 0) {
-                        finished = true;
-                        loading = false;
-                        return;
-                    }
-
                     let html = '';
 
-                
+                    if (res.length > 0) {
                         res.forEach(function(item) {
                             html += `
                             <a href="${item.url}" class="list-group-item list-group-item-action">
@@ -168,7 +151,9 @@
                             </a>
                         `;
                         });
-                    
+                    } else {
+                        html = `<div class="list-group-item text-muted">Tidak ditemukan</div>`;
+                    }
 
                     $('#searchDropdown').append(html).show();
 
