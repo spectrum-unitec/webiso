@@ -78,7 +78,22 @@ class Home extends BaseController
             }
         }
 
-        $docs = $docBuilder->findAll();
+        $docs = $docBuilder
+            ->orderBy("
+        LEFT(no_document, LENGTH(no_document) - LENGTH(SUBSTRING_INDEX(no_document, '-', -1)) - 1)
+    ", "ASC", false)
+            ->orderBy("
+        CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(no_document, '-', -1), '.', 1) AS UNSIGNED)
+    ", "ASC", false)
+            ->orderBy("
+        CAST(
+            IF(LOCATE('.', no_document),
+                SUBSTRING_INDEX(no_document, '.', -1),
+                0
+            ) AS UNSIGNED
+        )
+    ", "ASC", false)
+            ->findAll();
 
         // ======================
         // View PDF
