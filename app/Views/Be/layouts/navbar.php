@@ -5,6 +5,12 @@
         <!-- BEGIN menu -->
         <div class="menu">
             <div class="menu-header">Navigation</div>
+            <div class="menu-item <?= nav_active_route('admin.req-doc'); ?>">
+                <a href="<?= base_url(route_to('admin.req-doc')); ?>" class="menu-link">
+                    <span class="menu-icon"><i class="fa fa-download"></i></span>
+                    <span class="menu-text">Permintaan Dokumen</span>
+                </a>
+            </div>
             <div class="menu-item <?= nav_active_route('admin.masterdata'); ?>">
                 <a href="<?= base_url(route_to('admin.masterdata')); ?>" class="menu-link">
                     <span class="menu-icon"><i class="fa fa-database"></i></span>

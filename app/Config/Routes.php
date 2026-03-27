@@ -8,6 +8,12 @@ service('auth')->routes($routes);
 $routes->group('administrator', ['namespace' => 'App\Controllers\Be', 'filter' => ['auth']], function ($routes) {
     $routes->get('/', 'Home::index', ['as' => 'admin.home']);
 
+    $routes->group('request-dokumen', function ($routes) {
+        $routes->get('/', 'RequestDocument::index', ['as' => 'admin.req-doc']);
+        $routes->get('ajax-data', 'RequestDocument::ajaxData', ['as' => 'admin.req_doc.data']);
+        $routes->get('ajax-get-detail-modal', 'RequestDocument::getDetailModal', ['as' => 'admin.get_detail_modal']);
+    });
+
     $routes->group('mydocument', function ($routes) {
         $routes->get('/', 'MyDocument::index', ['as' => 'admin.mydoc']);
         $routes->post('ajax-store', 'MyDocument::ajaxStore', ['as' => 'admin.mydocument.store']);
@@ -64,4 +70,5 @@ $routes->group('', ['namespace' => 'App\Controllers\Fe'], function ($routes) {
     $routes->get('/pdf/(:num)', 'Home::viewPdf/$1', ['as' => 'pdf']);
     $routes->get('(:segment)', 'Home::menus/$1', ['as' => 'home.menus']);
     $routes->get('(:segment)/(:segment)', 'Home::menus/$1/$2', ['as' => 'home.menus.divisi']);
+    $routes->post('request-document', 'Home::requestDoc', ['as' => 'home.req_doc']);
 });

@@ -88,7 +88,7 @@
                         <select name="divisi" id="divisi" class="form-select">
                             <option value="">Pilih Kode Bagian</option>
                             <?php foreach ($divisi as $row) : ?>
-                                <option value="<?= $row->id; ?>">( <?= $row->kode_divisi; ?> ) <?= $row->nama_divisi; ?> </option>
+                                <option value="<?= $row->id; ?>">[<?= $row->kode_divisi; ?>] <?= $row->nama_divisi; ?> </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -149,7 +149,7 @@
                         <select name="divisi" id="divisi" class="form-select edit_divisi">
                             <option value="">Pilih Kode Bagian</option>
                             <?php foreach ($divisi as $row) : ?>
-                                <option value="<?= $row->id; ?>">( <?= $row->kode_divisi; ?> ) <?= $row->nama_divisi; ?> </option>
+                                <option value="<?= $row->id; ?>">[<?= $row->kode_divisi; ?>] <?= $row->nama_divisi; ?> </option>
                             <?php endforeach; ?>
                         </select>
                     </div>

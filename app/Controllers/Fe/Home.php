@@ -220,4 +220,34 @@ class Home extends BaseController
 
         return $this->response->setJSON($result);
     }
+
+    public function requestDoc()
+    {
+        $data = [
+            'nama_user'        => $this->request->getPost('nama_user'),
+            'email'        => $this->request->getPost('email'),
+            'divisi_id'        => $this->request->getPost('divisi'),
+            'nama_doc'         => $this->request->getPost('nama_doc'),
+            'no_doc'           => $this->request->getPost('no_doc'),
+            'revisi'           => $this->request->getPost('revisi'),
+            'tgl_pengajuan'    => $this->request->getPost('tgl_pengajuan'),
+            'jenis_pengajuan'  => $this->request->getPost('jenis_pengajuan'),
+            'alasan'           => $this->request->getPost('alasan'),
+            'usulan'           => $this->request->getPost('usulan'),
+        ];
+
+        $model = new \App\Models\DocumentRequestModel();
+
+        if ($model->insert($data)) {
+            return $this->response->setJSON([
+                'status' => 'success',
+                'message' => 'Pengajuan berhasil dikirim!'
+            ]);
+        }
+
+        return $this->response->setJSON([
+            'status' => 'error',
+            'message' => 'Gagal menyimpan data'
+        ]);
+    }
 }
