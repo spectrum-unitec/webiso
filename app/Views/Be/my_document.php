@@ -9,7 +9,7 @@
 
 
 <div class="container">
-    <div class="row justify-content-center">
+    <div class="row justify-content-center " style="margin-left: 5rem;">
         <div class="col-xl-12">
             <div class="mb-2">
                 <h1 class="page-header">
@@ -22,7 +22,7 @@
                     </button>
                     <button class="btn btn-primary" data-bs-target="#createDocument" data-bs-toggle="modal"><i class="far fa-plus"></i> Buat Dokumen</button>
                 </div>
-    
+
             </div>
             <div class="card">
                 <div class="card-body">
@@ -185,12 +185,14 @@
         const divisi = document.getElementById('divisi')
 
         jenisDoc.addEventListener('change', function() {
-            if (this.value == 1) {
+            const selectedText = this.options[this.selectedIndex].text;
+
+            if (selectedText === 'Manual Mutu') {
                 divisi.parentElement.style.display = 'none';
             } else {
                 divisi.parentElement.style.display = 'block';
             }
-        })
+        });
 
         const table = new DataTable('#datatableDefault', {
             processing: true,

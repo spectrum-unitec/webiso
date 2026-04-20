@@ -26305,7 +26305,7 @@ fieldset:disabled .btn {
     padding: 1.875rem 0;
     position: relative;
     min-height: 100%;
-    margin-left: 15rem
+    /* margin-left: 15rem */
 }
 
 .app-boxed-layout .app-content {

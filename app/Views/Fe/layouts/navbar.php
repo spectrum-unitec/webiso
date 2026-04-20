@@ -3,6 +3,7 @@ $uri = service('uri'); // ini object CodeIgniter\HTTP\URI
 $segments = $uri->getSegments();
 $seg1 = $segments[0] ?? '';
 $seg2 = $segments[1] ?? '';
+$seg3 = $segments[2] ?? '';
 ?>
 
 
@@ -24,24 +25,57 @@ $seg2 = $segments[1] ?? '';
                     </a>
                 </div>
             <?php endif; ?>
-			
-            <?php foreach ($navs as $row) : ?>
-				<div class="menu-item has-sub <?= $seg2 === $row->kode_divisi ? 'active' : ''; ?>">
-					<a href="#" class="menu-link">
-						<span class="menu-text"><?= $row->nama_divisi; ?></span>
-						<span class="menu-caret"><b class="caret"></b></span>
-					</a>
-					<div class="menu-submenu">
-						<?php foreach ($jenisAll as $jenis) : ?>
-							<div class="menu-item <?= $seg1 === $jenis->slug && $seg2 === $row->kode_divisi ? 'active' : ''; ?>">
-								<a href="<?= base_url(route_to('home.menus.divisi', $jenis->slug, $row->kode_divisi)); ?>" class="menu-link">
-									<span class="menu-text"><?= $jenis->jenis_document; ?></span>
-								</a>
-							</div>
-						<?php endforeach; ?>
-					</div>
-				</div>
-			<?php endforeach; ?>
+
+
+            <?php foreach ($navs as $dept) : ?>
+
+                <?php if (!empty($dept['nama_dept'])) : ?>
+                    <!-- DEPARTEMEN -->
+                    <div class="menu-item has-sub  <?= $seg1 === url_title($dept['nama_dept'], '-', true) ? 'active' : ''; ?>">
+                        <a href="#" class="menu-link">
+                            <span class="menu-text"><?= $dept['nama_dept']; ?></span>
+                            <span class="menu-caret"><b class="caret"></b></span>
+                        </a>
+
+                        <div class="menu-submenu">
+                            <?php foreach ($dept['divisi'] as $row) : ?>
+                                <!-- DIVISI -->
+                                <div class="menu-item has-sub <?= $seg3 === $row->kode_divisi ? 'active' : ''; ?>">
+                                    <a href="#" class="menu-link">
+                                        <span class="menu-text"><?= $row->nama_divisi; ?></span>
+                                        <span class="menu-caret"><b class="caret"></b></span>
+                                    </a>
+
+                                    <div class="menu-submenu submenu-right">
+
+                                        <?php foreach ($jenisAll as $jenis) : ?>
+
+                                            <!-- JENIS -->
+                                            <div class="menu-item <?= ($seg2 === $jenis->slug && $seg3 === $row->kode_divisi) ? 'active' : ''; ?>">
+                                                <a href="<?= base_url(route_to('home.menus.divisi', url_title($dept['nama_dept'], '-', true), $jenis->slug, $row->kode_divisi)); ?>" class="menu-link">
+                                                    <span class="menu-text"><?= $jenis->jenis_document; ?></span>
+                                                </a>
+                                            </div>
+
+                                        <?php endforeach; ?>
+
+                                    </div>
+                                </div>
+
+                            <?php endforeach; ?>
+
+                        </div>
+                    </div>
+                <?php endif; ?>
+            <?php endforeach; ?>
+
+            <?php if ($nonIso) : ?>
+                <div class="menu-item ">
+                    <a href="" class="menu-link">
+                        <span class="menu-text"><?= $nonIso->jenis_document; ?></span>
+                    </a>
+                </div>
+            <?php endif; ?>
 
             <div class="menu-item menu-control menu-control-start">
                 <a href="javascript:;" class="menu-link" data-toggle="top-nav-prev"><i class="fa fa-chevron-left"></i></a>

@@ -32,10 +32,12 @@
                     <nav class="nav">
                         <?php
                         $no = 1;
-                        $uri = current_url(true);
 
-                        $segment1 = $uri->getSegment(1, '');
-                        $segment2 = $uri->getSegment(2, '');
+                        $segments = current_url(true)->getSegments();
+
+                        $segment1 = $segments[0] ?? '';
+                        $segment2 = $segments[1] ?? '';
+                        $segment3 = $segments[2] ?? '';
 
                         $currentDoc = service('request')->getGet('doc');
 
@@ -50,8 +52,9 @@
                                 // route dengan divisi
                                 $baseUrl = base_url(route_to(
                                     'home.menus.divisi',
+                                    $segment1,
                                     $jenisSlug,
-                                    $segment2
+                                    $segment3
                                 ));
                             } else {
                                 // route tanpa divisi

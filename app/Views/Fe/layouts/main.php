@@ -12,12 +12,37 @@
     <link href="<?= base_url(); ?>assets/css/vendor.min.css" rel="stylesheet">
     <link href="<?= base_url(); ?>assets/css/app.min.css" rel="stylesheet">
     <!-- ================== END core-css ================== -->
+    <style>
+        /* sembunyikan default */
+        .menu-submenu {
+            display: none;
+        }
 
+        /* tampilkan submenu level 1 (departemen → divisi) */
+        .menu-item:hover>.menu-submenu {
+            display: block;
+        }
+
+        /* tampilkan submenu kanan (divisi → jenis) */
+        .menu-submenu .menu-item:hover>.submenu-right {
+            display: block;
+        }
+
+        /* posisi ke kanan */
+        .submenu-right {
+            position: absolute;
+            top: 0;
+            left: 100% !important;
+            min-width: 1200px;
+            background: #2c3e50;
+            z-index: 9999;
+        }
+    </style>
 </head>
 
 <body class='pace-done app-with-bg'>
     <!-- BEGIN #app -->
-    <div id="app" class="app app-with-top-nav app-boxed-layout">
+    <div id="app" class="app app-with-top-nav">
         <?= $this->include('Fe/layouts/header'); ?>
 
         <?= $this->include('Fe/layouts/navbar'); ?>
@@ -30,7 +55,7 @@
 
         <?= $this->include('Fe/layouts/footer'); ?>
 
-          <script>
+        <script>
             document.addEventListener('contextmenu', e => e.preventDefault());
 
             document.addEventListener('keydown', function(e) {
@@ -67,7 +92,7 @@
         </script>
 
         <?= $this->renderSection('pageScripts'); ?>
-		
+
 </body>
 
 </html>

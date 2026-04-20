@@ -4,15 +4,15 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class DivisiModel extends Model
+class DepartmentModel extends Model
 {
-    protected $table            = 'divisis';
+    protected $table            = 'departments';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'object';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['department_id', 'kode_divisi', 'nama_divisi', 'created_at', 'updated_at'];
+    protected $allowedFields    = ['nama_dept', 'created_at', 'updated_at'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
@@ -43,12 +43,4 @@ class DivisiModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
-
-    public function getJoinData()
-    {
-        return $this->db->table('divisis dv')
-            ->select('dv.id,dv.department_id,dv.kode_divisi,dv.nama_divisi,dv.created_at, dept.nama_dept')
-            ->join('departments AS dept', 'dept.id = dv.department_id', 'left')
-            ->orderBy('dv.created_at', 'DESC');
-    }
 }

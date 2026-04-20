@@ -8,7 +8,7 @@
 <?= $this->section('content'); ?>
 
 <div class="container">
-    <div class="row justify-content-center">
+    <div class="row justify-content-center" style="margin-left: 5rem;">
         <div class="col-xl-12">
             <div class="mb-2">
                 <h1 class="page-header">

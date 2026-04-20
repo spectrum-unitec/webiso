@@ -22,85 +22,30 @@ class Home extends BaseController
 
     public function index()
     {
-        $title = 'Home Page';
-        $navs = $this->divisiModel->findAll();
-        $jenisAll = $this->jenisModel->where('jenis_document !=', 'Manual Mutu')->findAll();
-        $jenisOnly = $this->jenisModel->where('jenis_document', 'Manual Mutu')->first();
-
-        return view('Fe/home', compact('navs', 'jenisAll', 'jenisOnly'));
+        return view('Fe/home', [
+            'navs' => $this->getNavs(),
+            ...$this->getJenis()
+        ]);
     }
 
-    public function menus(string $segment1, ?string $segment2 = null)
+    public function menus(string $segment1, ?string $segment2 = null, ?string $segment3 = null)
     {
-        // ======================
-        // Common data (navbar)
-        // ======================
-        $navs      = $this->divisiModel->findAll();
-        $jenisAll  = $this->jenisModel
-            ->where('jenis_document !=', 'Manual Mutu')
-            ->findAll();
-        $jenisOnly = $this->jenisModel
-            ->where('jenis_document', 'Manual Mutu')
-            ->first();
+        $navs = $this->getNavs();
+        $jenisData = $this->getJenis();
 
-        // ======================
-        // Jenis document
-        // ======================
-        $jenisSlug = $segment1 === 'manual-mutu' ? null : $segment1;
-        $jenisDoc  = $jenisSlug
-            ? $this->jenisModel->where('slug', $jenisSlug)->first()
-            : null;
+        $jenisSlug = $segment3 ? $segment2 : $segment1;
 
-        $jenis = $this->jenisModel
-            ->select('id')
-            ->where('slug', $segment1)
-            ->first();
+        $jenis = $this->resolveJenis($jenisSlug);
+        $divisiId = $this->resolveDivisi($segment3);
 
-        if (!$jenis) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
-        }
+        $docs = $this->getDocs($jenis->id, $divisiId);
 
-        // ======================
-        // Documents query
-        // ======================
-        $docBuilder = $this->docModel->where('jenis_id', $jenis->id);
-
-        $divisiId = null;
-        if ($segment2) {
-            $divisi = $this->divisiModel
-                ->select('id')
-                ->where('kode_divisi', $segment2)
-                ->first();
-
-            if ($divisi) {
-                $divisiId = $divisi->id;
-                $docBuilder->where('divisi_id', $divisiId);
-            }
-        }
-
-        $docs = $docBuilder
-            ->orderBy("
-        LEFT(no_document, LENGTH(no_document) - LENGTH(SUBSTRING_INDEX(no_document, '-', -1)) - 1)
-    ", "ASC", false)
-            ->orderBy("
-        CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(no_document, '-', -1), '.', 1) AS UNSIGNED)
-    ", "ASC", false)
-            ->orderBy("
-        CAST(
-            IF(LOCATE('.', no_document),
-                SUBSTRING_INDEX(no_document, '.', -1),
-                0
-            ) AS UNSIGNED
-        )
-    ", "ASC", false)
-            ->findAll();
-
-        // ======================
-        // View PDF
-        // ======================
         $docSlug = $this->request->getGet('doc');
-        if ($docSlug) {
 
+        // ======================
+        // VIEW PDF
+        // ======================
+        if ($docSlug) {
             $docQuery = $this->docModel->where('slug', $docSlug);
 
             if ($divisiId) {
@@ -109,28 +54,115 @@ class Home extends BaseController
 
             $doc = $docQuery->first();
 
-            return view('Fe/view_pdf', compact(
-                'navs',
-                'jenisAll',
-                'jenisOnly',
-                'docs',
-                'doc',
-                'jenisDoc'
-            ));
+            return view('Fe/view_pdf', [
+                'navs' => $navs,
+                'docs' => $docs,
+                'doc'  => $doc,
+                'jenisDoc' => $jenis,
+                'segment1' => $segment1,
+                'segment2' => $segment2,
+                'segment3' => $segment3,
+                ...$jenisData
+            ]);
         }
 
         // ======================
-        // View menus
+        // VIEW MENU
         // ======================
-        return view('Fe/view_menus', compact(
-            'navs',
-            'jenisAll',
-            'jenisOnly',
-            'docs',
-            'jenisDoc',
-            'segment1',
-            'segment2'
-        ));
+        return view('Fe/view_menus', [
+            'navs' => $navs,
+            'docs' => $docs,
+            'jenisDoc' => $jenis,
+            'segment1' => $segment1,
+            'segment2' => $segment2,
+            'segment3' => $segment3,
+            ...$jenisData
+        ]);
+    }
+
+    private function resolveJenis($slug)
+    {
+        if ($slug === 'manual-mutu') {
+            $jenis = $this->jenisModel
+                ->where('jenis_document', 'Manual Mutu')
+                ->first();
+        } else {
+            $jenis = $this->jenisModel
+                ->where('slug', $slug)
+                ->first();
+        }
+
+        if (!$jenis) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+
+        return $jenis;
+    }
+
+    private function resolveDivisi($kode)
+    {
+        if (!$kode) return null;
+
+        $divisi = $this->divisiModel
+            ->select('id')
+            ->where('kode_divisi', $kode)
+            ->first();
+
+        if (!$divisi) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+
+        return $divisi->id;
+    }
+
+    private function getDocs($jenisId, $divisiId = null)
+    {
+        $builder = $this->docModel->where('jenis_id', $jenisId);
+
+        if ($divisiId) {
+            $builder->where('divisi_id', $divisiId);
+        }
+
+        return $builder
+            ->orderBy("
+            LEFT(no_document, LENGTH(no_document) - LENGTH(SUBSTRING_INDEX(no_document, '-', -1)) - 1)
+        ", "ASC", false)
+            ->orderBy("
+            CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(no_document, '-', -1), '.', 1) AS UNSIGNED)
+        ", "ASC", false)
+            ->orderBy("
+            CAST(
+                IF(LOCATE('.', no_document),
+                    SUBSTRING_INDEX(no_document, '.', -1),
+                    0
+                ) AS UNSIGNED
+            )
+        ", "ASC", false)
+            ->findAll();
+    }
+
+    private function getNavs()
+    {
+        $rows = $this->divisiModel->getJoinData()->get()->getResult();
+
+        $navs = [];
+        foreach ($rows as $row) {
+            $navs[$row->nama_dept]['nama_dept'] = $row->nama_dept;
+            $navs[$row->nama_dept]['divisi'][] = $row;
+        }
+
+        return $navs;
+    }
+
+    private function getJenis()
+    {
+        return [
+            'jenisAll' => $this->jenisModel
+                ->whereNotIn('jenis_document', ['Manual Mutu', 'Document Non ISO'])
+                ->findAll(),
+            'jenisOnly' => $this->jenisModel->where('jenis_document', 'Manual Mutu')->first(),
+            'nonIso'    => $this->jenisModel->where('jenis_document', 'Document Non ISO')->first(),
+        ];
     }
 
 

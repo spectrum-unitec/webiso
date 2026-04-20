@@ -43,21 +43,25 @@
                         </div>
 
                         <?php
-                        $segment1 = current_url(true)->getSegment(1, '');
-                        $segment2 = current_url(true)->getSegment(2, '');
+                        $segments = current_url(true)->getSegments();
+
+                        $segment1 = $segments[0] ?? '';
+                        $segment2 = $segments[1] ?? '';
+                        $segment3 = $segments[2] ?? '';
 
                         $jenisSlug = $jenisDoc
                             ? $jenisDoc->slug
                             : $jenisOnly->slug;
+
+                        $url = ($segment1 === 'manual-mutu')
+                            ? base_url(route_to('home.menus', $jenisSlug))
+                            : base_url(route_to('home.menus.divisi', $segment1, $jenisSlug, $segment3));
+
                         ?>
 
                         <?php foreach ($docs as $doc) : ?>
                             <div class="col-6">
                                 <?php
-                                $url = ($segment1 === 'manual-mutu')
-                                    ? base_url(route_to('home.menus', $jenisSlug))
-                                    : base_url(route_to('home.menus.divisi', $jenisSlug, $segment2));
-
                                 $url .= '?doc=' . $doc->slug;
                                 ?>
 
