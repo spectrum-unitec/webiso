@@ -49,6 +49,6 @@ class DivisiModel extends Model
         return $this->db->table('divisis dv')
             ->select('dv.id,dv.department_id,dv.kode_divisi,dv.nama_divisi,dv.created_at, dept.nama_dept')
             ->join('departments AS dept', 'dept.id = dv.department_id', 'left')
-            ->orderBy('dv.created_at', 'DESC');
+            ->orderBy('dv.created_at', 'ASC');
     }
 }
