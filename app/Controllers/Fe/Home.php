@@ -32,7 +32,7 @@ class Home extends BaseController
         ]);
     }
 
-    public function menus(string $segment1 , ?string $segment2 = null, ?string $segment3 = null)
+    public function menus(string $segment1, ?string $segment2 = null, ?string $segment3 = null)
     {
         $navs = $this->getNavs();
         $jenisData = $this->getJenis();
@@ -183,9 +183,11 @@ class Home extends BaseController
         return [
             'histCreate' => $this->historyModel
                 ->where('action', 'create')
+                ->orderBy('id')
                 ->findAll(5),
             'histUpdate' => $this->historyModel
                 ->where('action', 'update')
+                ->orderBy('id')
                 ->findAll(5),
         ];
     }
