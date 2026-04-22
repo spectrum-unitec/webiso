@@ -48,57 +48,93 @@
 </div>
 
 <!-- Modal create document -->
-<div class="modal fade" id="createDocument" tabindex="-1" aria-labelledby="exampleModalLabel">
+<div class="modal fade" id="createDocument" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Buat Dokumen</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title">Buat Dokumen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
+
             <form id="formCreateDocument" enctype="multipart/form-data">
                 <div class="modal-body">
+
+                    <!-- ✅ TOGGLE -->
                     <div class="mb-3">
-                        <label class="form-label" for="exampleFormControlInput1">NO Dokumen</label>
-                        <input type="text" name="no_doc" id="title" class="form-control" placeholder="Masukan no dokumen">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label" for="exampleFormControlInput1">Nama Dokumen</label>
-                        <input type="text" name="nm_doc" id="title" class="form-control" placeholder="Masukan nama dokumen">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label" for="exampleFormControlInput1">Level Dokumen ISO</label>
-                        <select name="level" class="form-select">
-                            <option value="">Pilih Level Dokumen</option>
-                            <?php foreach ($levelDoc as $row) : ?>
-                                <option value="<?= $row->id; ?>"><?= $row->level; ?></option>
-                            <?php endforeach; ?>
+                        <label class="form-label">Tipe Dokumen</label>
+                        <select id="tipeDoc" name="tipe" class="form-select">
+                            <option value="iso">ISO</option>
+                            <option value="non_iso">Non ISO</option>
                         </select>
                     </div>
+
+                    <!-- NO -->
                     <div class="mb-3">
-                        <label class="form-label" for="exampleFormControlInput1">Jenis Dokumen</label>
-                        <select name="jenis" id="jenisDoc" class="form-select">
-                            <option value="">Pilih Jenis Dokumen</option>
-                            <?php foreach ($jenisDoc as $row) : ?>
-                                <option value="<?= $row->id; ?>"><?= $row->jenis_document; ?></option>
-                            <?php endforeach; ?>
-                        </select>
+                        <label class="form-label">NO Dokumen</label>
+                        <input type="text" name="no_doc" id="no_doc" class="form-control"
+                            placeholder="Masukan no dokumen">
                     </div>
+
+                    <!-- NAMA -->
                     <div class="mb-3">
-                        <label class="form-label" for="exampleFormControlInput1">Kode Bagian</label>
-                        <select name="divisi" id="divisi" class="form-select">
-                            <option value="">Pilih Kode Bagian</option>
-                            <?php foreach ($divisi as $row) : ?>
-                                <option value="<?= $row->id; ?>">[<?= $row->kode_divisi; ?>] <?= $row->nama_divisi; ?> </option>
-                            <?php endforeach; ?>
-                        </select>
+                        <label class="form-label">Nama Dokumen</label>
+                        <input type="text" name="nm_doc" id="nm_doc" class="form-control"
+                            placeholder="Masukan nama dokumen">
                     </div>
+
+                    <!-- ✅ ISO FIELDS -->
+                    <!-- ISO ONLY -->
+                    <div id="isoFields">
+
+                        <div class="mb-3">
+                            <label class="form-label">Level Dokumen ISO</label>
+                            <select name="level" class="form-select">
+                                <option value="">Pilih Level Dokumen</option>
+                                <?php foreach ($levelDoc as $row) : ?>
+                                    <option value="<?= $row->id; ?>"><?= $row->level; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Jenis Dokumen</label>
+                            <select name="jenis" id="jenisDoc" class="form-select">
+                                <option value="">Pilih Jenis Dokumen</option>
+                                <?php foreach ($jenisDoc as $row) : ?>
+                                    <option value="<?= $row->id; ?>">
+                                        <?= $row->jenis_document; ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Kode Bagian</label>
+                            <select name="divisi" id="divisi" class="form-select">
+                                <option value="">Pilih Kode Bagian</option>
+                                <?php foreach ($divisi as $row) : ?>
+                                    <option value="<?= $row->id; ?>">
+                                        [<?= $row->kode_divisi; ?>] <?= $row->nama_divisi; ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <!-- UPLOAD (UNTUK SEMUA) -->
                     <div class="mb-3">
-                        <label class="form-label" for="defaultFile">Upload file PDF</label>
-                        <input type="file" name="pdf_file" accept="application/pdf" class="form-control" id="pdfFile">
+                        <label class="form-label">Upload file PDF</label>
+                        <input type="file" name="pdf_file" accept="application/pdf"
+                            class="form-control" id="pdfFile">
                     </div>
+                    <!-- END ISO -->
+
                 </div>
+
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal">Batal</button>
                     <button type="submit" class="btn btn-primary">Simpan</button>
                 </div>
             </form>
@@ -107,62 +143,92 @@
 </div>
 
 
+
 <!-- Modal edit document -->
-<div class="modal fade" id="editDocument" tabindex="-1" aria-labelledby="exampleModalLabel">
+<div class="modal fade" id="editDocument" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Edit Dokumen</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title">Edit Dokumen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
+
             <form id="formEditDocument" enctype="multipart/form-data">
                 <input type="hidden" name="id" id="edit_id">
+
+
                 <div class="modal-body">
+
+                    <!-- <select ty id="edit_tipeDoc" name="tipe" class="form-select" aria-readonly="true">
+                        <option value="iso">ISO</option>
+                        <option value="non_iso">Non ISO</option>
+                    </select> -->
+
+                    <!-- NO -->
                     <div class="mb-3">
-                        <label class="form-label" for="exampleFormControlInput1">NO Dokumen</label>
-                        <input type="text" name="no_doc" id="edit_no_doc" class="form-control" placeholder="Masukan no dokumen">
+                        <label class="form-label">NO Dokumen</label>
+                        <input type="text" name="no_doc" id="edit_no_doc" class="form-control">
                     </div>
+
+                    <!-- NAMA -->
                     <div class="mb-3">
-                        <label class="form-label" for="exampleFormControlInput1">Nama Dokumen</label>
-                        <input type="text" name="nm_doc" id="edit_nm_doc" class="form-control" placeholder="Masukan nama dokumen">
+                        <label class="form-label">Nama Dokumen</label>
+                        <input type="text" name="nm_doc" id="edit_nm_doc" class="form-control">
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label" for="exampleFormControlInput1">Level Dokumen ISO</label>
-                        <select name="level" id="edit_level" class="form-select">
-                            <option value="">Pilih Level Dokumen</option>
-                            <?php foreach ($levelDoc as $row) : ?>
-                                <option value="<?= $row->id; ?>"><?= $row->level; ?></option>
-                            <?php endforeach; ?>
-                        </select>
+
+                    <!-- ✅ ISO FIELDS -->
+                    <div id="editIsoFields">
+
+                        <div class="mb-3">
+                            <label class="form-label">Level Dokumen ISO</label>
+                            <select name="level" id="edit_level" class="form-select">
+                                <option value="">Pilih Level Dokumen</option>
+                                <?php foreach ($levelDoc as $row) : ?>
+                                    <option value="<?= $row->id; ?>"><?= $row->level; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Jenis Dokumen</label>
+                            <select name="jenis" id="edit_jenis" class="form-select">
+                                <option value="">Pilih Jenis Dokumen</option>
+                                <?php foreach ($jenisDoc as $row) : ?>
+                                    <option value="<?= $row->id; ?>">
+                                        <?= $row->jenis_document; ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Kode Bagian</label>
+                            <select name="divisi" id="edit_divisi" class="form-select">
+                                <option value="">Pilih Kode Bagian</option>
+                                <?php foreach ($divisi as $row) : ?>
+                                    <option value="<?= $row->id; ?>">
+                                        [<?= $row->kode_divisi; ?>] <?= $row->nama_divisi; ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
                     </div>
+
+                    <!-- FILE (UNTUK SEMUA) -->
                     <div class="mb-3">
-                        <label class="form-label" for="exampleFormControlInput1">Jenis Dokumen</label>
-                        <select name="jenis" id="jenisDoc" class="form-select edit_jenis">
-                            <option value="">Pilih Jenis Dokumen</option>
-                            <?php foreach ($jenisDoc as $row) : ?>
-                                <option value="<?= $row->id; ?>"><?= $row->jenis_document; ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label" for="exampleFormControlInput1">Kode Bagian</label>
-                        <select name="divisi" id="divisi" class="form-select edit_divisi">
-                            <option value="">Pilih Kode Bagian</option>
-                            <?php foreach ($divisi as $row) : ?>
-                                <option value="<?= $row->id; ?>">[<?= $row->kode_divisi; ?>] <?= $row->nama_divisi; ?> </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label" for="defaultFile">Upload file PDF</label>
+                        <label class="form-label">Upload file PDF</label>
                         <input type="file" name="pdf_file" id="edit_pdf" accept="application/pdf" class="form-control">
                         <small id="currentFile"></small>
                     </div>
+
                     <div class="mb-3">
                         <label class="form-label">File PDF Saat Ini</label>
                         <iframe id="pdfViewer" style="width:100%; height:400px;" frameborder="0"></iframe>
                     </div>
+
                 </div>
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                     <button type="submit" class="btn btn-primary">Simpan</button>
@@ -178,6 +244,35 @@
 <?= $this->section('pageScripts'); ?>
 <script src="https://cdn.datatables.net/2.3.5/js/dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/2.3.5/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        const modal = document.getElementById('createDocument');
+
+        modal.addEventListener('shown.bs.modal', function() {
+
+            const tipeDoc = document.getElementById('tipeDoc');
+            const isoFields = document.getElementById('isoFields');
+
+            function toggleForm() {
+                if (tipeDoc.value === 'non_iso') {
+                    isoFields.style.display = 'none';
+                } else {
+                    isoFields.style.display = 'block';
+                }
+            }
+
+            // reset tiap buka modal
+            tipeDoc.value = 'iso';
+            toggleForm();
+
+            tipeDoc.onchange = toggleForm;
+        });
+
+    });
+</script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
 
@@ -272,10 +367,28 @@
 
         //created form
         const formCreate = document.getElementById('formCreateDocument');
+
         formCreate.addEventListener('submit', async function(e) {
             e.preventDefault();
+
             const form = e.target;
             const formData = new FormData(form);
+
+            const tipeDoc = document.getElementById('tipeDoc');
+
+            if (tipeDoc.value === 'non_iso') {
+                formData.set('tipe', 'non_iso');
+
+                formData.delete('level');
+                formData.delete('jenis');
+                formData.delete('divisi');
+
+            } else {
+                formData.set('tipe', 'iso');
+            }
+
+            const fileInput = document.getElementById('pdfFile');
+
 
             try {
                 const res = await fetch('<?= base_url(route_to('admin.mydocument.store')) ?>', {
@@ -284,17 +397,31 @@
                         'X-Requested-With': 'XMLHttpRequest',
                     },
                     body: formData
-                })
+                });
 
                 const data = await res.json();
 
                 if (data.status) {
+
                     form.reset();
 
-                    //tutup modal
-                    const modalEl = document.getElementById('createDocument')
-                    const modal = bootstrap.Modal.getInstance(modalEl) ?? new bootstrap.Modal(modalEl);
+                    // ✅ reset toggle + UI
+                    const isoFields = document.getElementById('isoFields');
+                    const labelTipe = document.getElementById('labelTipe');
+
+                    tipeDoc.checked = true;
+                    tipeDoc.value = 'iso';
+                    isoFields.style.display = 'block';
+                    // labelTipe.textContent = 'ISO';
+
+                    // tutup modal
+                    const modalEl = document.getElementById('createDocument');
+                    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                    console.log('modal instance:', bootstrap.Modal.getInstance(modalEl));
                     modal.hide();
+                    console.log(fileInput.files[0]);
+
+                    // reload table
                     table.ajax.reload(false);
                 }
 
@@ -312,33 +439,93 @@
                 if (btnEdit) {
                     const id = btnEdit.dataset.id;
 
-                    const baseEditUrl = "<?= site_url('administrator/mydocument/ajax-edit') ?>";
-                    const res = await fetch(`${baseEditUrl}/${id}`);
-                    const data = await res.json();
+                    try {
+                        const baseEditUrl = "<?= site_url('administrator/mydocument/ajax-edit') ?>";
+                        const res = await fetch(`${baseEditUrl}/${id}`);
 
-                    // cek Divisi
-                    const editDivisi = document.querySelector('.edit_divisi');
-                    if (editDivisi) {
-                        editDivisi.value = data.divisi_id;
-                        editDivisi.parentElement.style.display =
-                            data.divisi_id !== null ? 'block' : 'none';
+                        if (!res.ok) {
+                            throw new Error('Response tidak OK');
+                        }
+
+                        const data = await res.json();
+
+                        // ======================
+                        // SET BASIC DATA
+                        // ======================
+                        document.getElementById('edit_id').value = data.id ?? '';
+                        document.getElementById('edit_no_doc').value = data.no_document ?? '';
+                        document.getElementById('edit_nm_doc').value = data.nama_document ?? '';
+
+                        const isoFields = document.getElementById('editIsoFields');
+                        const editLevel = document.getElementById('edit_level');
+                        const editJenis = document.getElementById('edit_jenis');
+                        const editDivisi = document.getElementById('edit_divisi');
+                        const tipeDoc = document.getElementById('edit_tipeDoc');
+
+                        // ======================
+                        // DETECT ISO / NON ISO (lebih aman)
+                        // ======================
+                        const isIso = data.level_id !== null && data.level_id !== '';
+
+                        // ======================
+                        // SET HIDDEN TIPE
+                        // ======================
+                        if (tipeDoc) {
+                            tipeDoc.value = isIso ? 'iso' : 'non_iso';
+                        }
+
+                        // ======================
+                        // TOGGLE ISO FIELD
+                        // ======================
+                        if (isoFields) {
+                            isoFields.style.display = isIso ? 'block' : 'none';
+                        }
+
+                        // ======================
+                        // SET VALUE ISO FIELD
+                        // ======================
+                        if (isIso) {
+                            if (editLevel) editLevel.value = data.level_id ?? '';
+                            if (editJenis) editJenis.value = data.jenis_id ?? '';
+                            if (editDivisi) editDivisi.value = data.divisi_id ?? '';
+                        } else {
+                            if (editLevel) editLevel.value = '';
+                            if (editJenis) editJenis.value = '';
+                            if (editDivisi) editDivisi.value = '';
+                        }
+
+                        // ======================
+                        // HANDLE JENIS (Manual Mutu)
+                        // ======================
+                        if (typeof handleJenisChange === 'function') {
+                            handleJenisChange();
+                        }
+
+                        // ======================
+                        // RESET FILE INPUT
+                        // ======================
+                        const fileInput = document.getElementById('edit_pdf');
+                        if (fileInput) fileInput.value = '';
+
+                        // ======================
+                        // PDF VIEWER (ANTI CACHE)
+                        // ======================
+                        const pdfViewer = document.getElementById('pdfViewer');
+                        if (pdfViewer) {
+                            pdfViewer.src = data.file ?
+                                `<?= base_url('administrator/mydocument/preview/') ?>${data.file}?t=${Date.now()}` :
+                                '';
+                        }
+
+                        // ======================
+                        // SHOW MODAL
+                        // ======================
+                        new bootstrap.Modal('#editDocument').show();
+
+                    } catch (error) {
+                        console.error('Gagal load data:', error);
+                        alert('Gagal mengambil data dokumen');
                     }
-
-                    document.getElementById('edit_id').value = data.id;
-                    document.getElementById('edit_no_doc').value = data.no_document;
-                    document.getElementById('edit_nm_doc').value = data.nama_document;
-                    document.getElementById('edit_level').value = data.level_id;
-                    document.querySelector('.edit_jenis').value = data.jenis_id;
-                    document.getElementById('edit_pdf').value = '';
-
-                    // tampilkan PDF
-                    const pdfViewer = document.getElementById('pdfViewer');
-                    pdfViewer.src = data.file ?
-                        `<?= base_url('administrator/mydocument/preview/') ?>${data.file}` :
-                        '';
-
-                    new bootstrap.Modal('#editDocument').show();
-                    return;
                 }
 
                 /* ================= DELETE ================= */
@@ -375,11 +562,19 @@
             });
 
         //update form
-        document.getElementById('formEditDocument').addEventListener('submit', async e => {
+        document.getElementById('formEditDocument').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const formData = new FormData(e.target);
+
+            const form = e.target;
+            const formData = new FormData(form);
+            const submitBtn = form.querySelector('button[type="submit"]');
 
             try {
+                // 🔒 disable tombol biar tidak double submit
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerText = 'Menyimpan...';
+                }
                 const res = await fetch("<?= base_url(route_to('admin.mydocument.update')) ?>", {
                     method: 'POST',
                     body: formData,
@@ -388,20 +583,56 @@
                     }
                 });
 
+                // ❗ handle HTTP error
+                if (!res.ok) {
+                    throw new Error('Server error: ' + res.status);
+                }
+
                 const data = await res.json();
 
-                if (data.success) {
-                    // Tutup modal
-                    bootstrap.Modal.getInstance(document.getElementById('editDocument')).hide();
+                // ======================
+                // SUCCESS
+                // ======================
+                if (data.status) {
 
-                    // Reload DataTable
-                    table.ajax.reload(null, false);
+                    const modalEl = document.getElementById('editDocument');
+                    const modalInstance = bootstrap.Modal.getInstance(modalEl);
+
+                    if (modalInstance) {
+                        modalInstance.hide();
+                    }
+
+                    // reload datatable tanpa reset paging
+                    if (typeof table !== 'undefined') {
+                        table.ajax.reload(null, false);
+                    }
+
+
+
+
+                } else {
+                    // ❗ tampilkan pesan error dari server
+                    alert(data.message || 'Gagal menyimpan data');
                 }
 
             } catch (err) {
                 console.error(err);
+                alert('Terjadi kesalahan saat menyimpan data');
+            } finally {
+                // 🔓 aktifkan kembali tombol
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'Simpan';
+                }
             }
         });
+
+
+        const editJenis = document.getElementById('edit_jenis');
+
+        if (editJenis) {
+            editJenis.addEventListener('change', handleJenisChange);
+        }
 
         document.getElementById('btnDeleteSelected').addEventListener('click', async () => {
             const ids = [...document.querySelectorAll('.row-check:checked')]
@@ -440,5 +671,23 @@
         });
 
     })
+</script>
+
+<script>
+    function handleJenisChange() {
+        const editJenis = document.getElementById('edit_jenis');
+        const editDivisi = document.getElementById('edit_divisi');
+
+        if (!editJenis || !editDivisi) return;
+
+        const selectedText = editJenis.options[editJenis.selectedIndex]?.text;
+
+        if (selectedText === 'Manual Mutu') {
+            editDivisi.closest('.mb-3').style.display = 'none';
+            editDivisi.value = ''; // reset
+        } else {
+            editDivisi.closest('.mb-3').style.display = 'block';
+        }
+    }
 </script>
 <?= $this->endSection(); ?>

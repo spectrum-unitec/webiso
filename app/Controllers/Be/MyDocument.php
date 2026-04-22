@@ -5,6 +5,7 @@ namespace App\Controllers\Be;
 use App\Controllers\BaseController;
 use App\Libraries\Breadcrumb;
 use App\Models\DivisiModel;
+use App\Models\HistoryDocumentModel;
 use App\Models\JenisDocumentModel;
 use App\Models\LevelDocument;
 use App\Models\MydocumentModel;
@@ -14,10 +15,14 @@ use Hermawan\DataTables\DataTable;
 class MyDocument extends BaseController
 {
     protected $docModel;
+    protected $jenisDocModel;
+    protected $historyDocModel;
 
     public function __construct()
     {
         $this->docModel = new MydocumentModel();
+        $this->jenisDocModel = new JenisDocumentModel();
+        $this->historyDocModel = new HistoryDocumentModel();
     }
 
     public function index()
@@ -32,7 +37,7 @@ class MyDocument extends BaseController
         $levelDoc = $modelLevelDoc->findAll();
 
         $modelJenisDoc = new JenisDocumentModel();
-        $jenisDoc = $modelJenisDoc->findAll();
+        $jenisDoc = $modelJenisDoc->where('jenis_document !=', 'Document Non Iso')->findAll();
 
         $modelDivisi = new DivisiModel();
         $divisi = $modelDivisi->findAll();
@@ -42,7 +47,6 @@ class MyDocument extends BaseController
 
     public function ajaxStore()
     {
-
         if (!$this->request->isAJAX()) {
             return $this->response
                 ->setStatusCode(403)
@@ -52,25 +56,84 @@ class MyDocument extends BaseController
                 ]);
         }
 
+        $tipe     = $this->request->getPost('tipe');
         $divisiId = $this->request->getPost('divisi');
-        $pdfFile = $this->request->getFile('pdf_file');
-        $newName = $pdfFile->getRandomName();
 
-        $pdfFile->move(WRITEPATH . 'uploads/pdf', $newName);
+        $pdfFile  = $this->request->getFile('pdf_file');
+        $fileName = null;
 
-        $this->docModel->insert([
-            'no_document' => $this->request->getPost('no_doc'),
-            'slug' => url_title($this->request->getPost('nm_doc'), '-', true),
+        // dd($pdfFile);
+
+        // ================= FILE =================
+        if ($pdfFile && $pdfFile->isValid() && !$pdfFile->hasMoved()) {
+
+            if ($pdfFile->getClientMimeType() !== 'application/pdf') {
+                return $this->response->setJSON([
+                    'status' => false,
+                    'message' => 'File harus berupa PDF'
+                ]);
+            }
+
+            $path = WRITEPATH . 'uploads/pdf';
+            if (!is_dir($path)) {
+                mkdir($path, 0777, true);
+            }
+
+            $fileName = $pdfFile->getRandomName();
+            $pdfFile->move($path, $fileName);
+        }
+
+        // ================= VALIDASI =================
+        if (!$this->request->getPost('no_doc') || !$this->request->getPost('nm_doc')) {
+            return $this->response->setJSON([
+                'status' => false,
+                'message' => 'No dokumen dan nama wajib diisi'
+            ]);
+        }
+
+        if ($tipe === 'iso') {
+            if (!$this->request->getPost('level') || !$this->request->getPost('jenis')) {
+                return $this->response->setJSON([
+                    'status' => false,
+                    'message' => 'Field ISO wajib diisi'
+                ]);
+            }
+        }
+
+        $jenisNonIso = $this->jenisDocModel
+            ->where('jenis_document', 'Document Non ISO')
+            ->first();
+
+        $jenisNonIsoId = $jenisNonIso->id ?? null;
+
+        // ================= INSERT DOCUMENT =================
+        $insertData = [
+            'no_document'   => $this->request->getPost('no_doc'),
+            'slug'          => url_title($this->request->getPost('nm_doc'), '-', true),
             'nama_document' => $this->request->getPost('nm_doc'),
-            'level_id' => $this->request->getPost('level'),
-            'jenis_id' => $this->request->getPost('jenis'),
-            'divisi_id' => empty($divisiId) ? null : $divisiId,
-            'file' => $newName
-        ], true);
+            'level_id'      => $tipe === 'iso' ? $this->request->getPost('level') : null,
+            'jenis_id'      => $tipe === 'iso'
+                ? $this->request->getPost('jenis')
+                : $jenisNonIsoId,
+            'divisi_id'     => $tipe === 'iso' ? (empty($divisiId) ? null : $divisiId) : null,
+            'file'          => $fileName
+        ];
+
+        $this->docModel->insert($insertData);
+        $documentId = $this->docModel->getInsertID();
+
+        // ================= INSERT HISTORY =================
+        $this->historyDocModel->insert([
+            'document_id'   => $documentId,
+            'action'        => 'create',
+            'no_document' => $insertData['no_document'],
+            'nama_document'  => $insertData['nama_document'],
+            'created_at'    => date('Y-m-d H:i:s')
+        ]);
 
         return $this->response->setJSON([
             'status' => true,
-            'message' => 'PDF berhasil diupload'
+            'message' => 'Dokumen berhasil disimpan'
         ]);
     }
 
@@ -135,35 +198,118 @@ class MyDocument extends BaseController
                 ]);
         }
 
-        $id = $this->request->getPost('id');
+        $id  = $this->request->getPost('id');
         $doc = $this->docModel->find($id);
+        $jenisId = $this->request->getPost('jenis');
 
+
+        if (!$doc) {
+            return $this->response->setJSON([
+                'status' => false,
+                'message' => 'Data tidak ditemukan'
+            ]);
+        }
+
+        // 🔥 DETEKSI TIPE
+        $isIso = !empty($doc->level_id);
+
+        $isManualMutu = $this->jenisDocModel->find($jenisId);
+
+        // ================= DATA =================
         $data = [
-            'no_document' => $this->request->getPost('no_doc'),
+            'no_document'   => $this->request->getPost('no_doc'),
             'nama_document' => $this->request->getPost('nm_doc'),
-            'level_id' => $this->request->getPost('level'),
-            'jenis_id' => $this->request->getPost('jenis'),
-            'divisi_id' => $this->request->getPost('divisi'),
         ];
 
-        // File upload baru
+        if ($isIso) {
+            $data['level_id']  = $this->request->getPost('level');
+            $data['jenis_id']  = $this->request->getPost('jenis');
+            $data['divisi_id'] = $this->request->getPost('divisi');
+
+            if ($isManualMutu->slug === 'manual-mutu') {
+                $data['divisi_id'] = null;
+            } else {
+                $data['divisi_id'] = $this->request->getPost('divisi');
+            }
+        } else {
+            $data['level_id']  = null;
+            $data['divisi_id'] = null;
+            $data['jenis_id']  = $doc->jenis_id; // ✅ FIX
+        }
+
+        // ================= FILE =================
         $file = $this->request->getFile('pdf_file');
+
+        // 🔥 DEBUG 1: cek file masuk atau tidak
+        // if (!$file) {
+        //     dd('FILE NULL');
+        // }
+
+        // 🔥 DEBUG 2: info dasar file
+        // var_dump([
+        //     'name'  => $file->getName(),
+        //     'size'  => $file->getSize(),
+        //     'error' => $file->getError(),
+        // ]);
+        // die;
+
         if ($file && $file->isValid() && !$file->hasMoved()) {
-            // Pindahkan ke writable/uploads
+
+            if ($file->getClientMimeType() !== 'application/pdf') {
+                return $this->response->setJSON([
+                    'status' => false,
+                    'message' => 'File harus berupa PDF'
+                ]);
+            }
+
+
+            $path = WRITEPATH . 'uploads/pdf';
+            if (!is_dir($path)) {
+                mkdir($path, 0777, true);
+            }
+
             $newName = $file->getRandomName();
-            $file->move(WRITEPATH . 'uploads/pdf', $newName);
+            $file->move($path, $newName);
 
             $data['file'] = $newName;
 
-            // Opsional: hapus file lama
-            if (!empty($doc->file) && file_exists(WRITEPATH . 'uploads/pdf/' . $doc->file)) {
-                unlink(WRITEPATH . 'uploads/pdf/' . $doc->file);
+            // hapus file lama
+            if (!empty($doc->file) && file_exists($path . '/' . $doc->file)) {
+                unlink($path . '/' . $doc->file);
             }
         }
 
+        // ================= CEK PERUBAHAN =================
+        $isChanged = false;
+        foreach ($data as $key => $value) {
+            if ($doc->$key != $value) { // ✅ FIX
+                $isChanged = true;
+                break;
+            }
+        }
+
+        if (!$isChanged) {
+            return $this->response->setJSON([
+                'status' => false,
+                'message' => 'Tidak ada perubahan data'
+            ]);
+        }
+
+        // ================= UPDATE =================
         $this->docModel->update($id, $data);
 
-        return $this->response->setJSON(['success' => true]);
+        // ================= HISTORY =================
+        $this->historyDocModel->insert([
+            'document_id' => $id,
+            'action' => 'update',
+            'no_document' => $data['no_document'],
+            'nama_document' => $data['nama_document'],
+        ]);
+
+        return $this->response->setJSON([
+            'status' => true,
+            'message' => 'Dokumen berhasil diupdate'
+        ]);
     }
 
     public function ajaxDelete($id)

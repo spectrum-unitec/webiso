@@ -42,7 +42,7 @@
 
 <body class='pace-done app-with-bg'>
     <!-- BEGIN #app -->
-    <div id="app" class="app app-with-top-nav">
+    <div id="app" class="app app-with-top-nav app-boxed-layout">
         <?= $this->include('Fe/layouts/header'); ?>
 
         <?= $this->include('Fe/layouts/navbar'); ?>

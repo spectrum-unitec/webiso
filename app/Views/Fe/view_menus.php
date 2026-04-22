@@ -31,12 +31,12 @@
 
                     <?php else : ?>
 
-                        <div class="position-relative mb-2">
+                        <div class="position-relative mb-4">
                             <div class="input-group">
                                 <span class="input-group-text" style="background-color: white;">
                                     <i class="fa fa-search"></i>
                                 </span>
-                                <input type="text" id="searchDoc" class="form-control" placeholder="Cari berdasarkan nama atau nomor dokumen..">
+                                <input type="text" id="searchDoc" class="form-control" style="padding: 9px;" placeholder="Cari berdasarkan nama atau nomor dokumen..">
                             </div>
 
                             <div id="searchDropdown" class="list-group shadow position-absolute w-100 mt-1" style="z-index: 1000; display:none; max-height:380px; overflow:auto;"></div>
@@ -49,11 +49,11 @@
                         $segment2 = $segments[1] ?? '';
                         $segment3 = $segments[2] ?? '';
 
-                        $jenisSlug = $jenisDoc
-                            ? $jenisDoc->slug
-                            : $jenisOnly->slug;
+                        $jenisSlug = $jenisDoc->slug
+                            ?? $jenisOnly->slug
+                            ?? $nonIso->slug;
 
-                        $url = ($segment1 === 'manual-mutu')
+                        $url = in_array($segment1, ['manual-mutu', 'document-non-iso'])
                             ? base_url(route_to('home.menus', $jenisSlug))
                             : base_url(route_to('home.menus.divisi', $segment1, $jenisSlug, $segment3));
 
@@ -62,10 +62,10 @@
                         <?php foreach ($docs as $doc) : ?>
                             <div class="col-6">
                                 <?php
-                                $url .= '?doc=' . $doc->slug;
+                                $docUrl = $url . '?doc=' . $doc->slug;
                                 ?>
 
-                                <a href="<?= esc($url) ?>" class="link-doc">
+                                <a href="<?= esc($docUrl) ?>" class="link-doc">
                                     <div class="card mb-2">
                                         <div class="card-body d-flex align-items-center gap-2">
                                             <img src="<?= base_url('assets/img/pdf.png') ?>" width="35" alt="PDF">
@@ -80,6 +80,9 @@
                     <?php endif; ?>
 
                 </div>
+
+
+
 
             </div>
             <!-- END col-9-->

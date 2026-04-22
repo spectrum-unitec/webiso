@@ -1,5 +1,6 @@
 <?php
 
+use App\Controllers\Fe\Home;
 use CodeIgniter\Router\RouteCollection;
 
 service('auth')->routes($routes);
@@ -69,7 +70,7 @@ $routes->group('', ['namespace' => 'App\Controllers\Fe'], function ($routes) {
     $routes->get('/', 'Home::index', ['as' => 'home']);
     $routes->get('search-doc', 'Home::searchDoc', ['as' => 'search_doc']);
     $routes->get('/pdf/(:num)', 'Home::viewPdf/$1', ['as' => 'pdf']);
-    $routes->get('(:segment)', 'Home::menus/$1', ['as' => 'home.menus']);
     $routes->get('(:segment)/(:segment)/(:segment)', 'Home::menus/$1/$2/$3', ['as' => 'home.menus.divisi']);
     $routes->post('request-document', 'Home::requestDoc', ['as' => 'home.req_doc']);
+    $routes->get('(:segment)', 'Home::menus/$1', ['as' => 'home.menus']);
 });

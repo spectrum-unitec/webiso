@@ -4,6 +4,7 @@ namespace App\Controllers\Fe;
 
 use App\Controllers\BaseController;
 use App\Models\DivisiModel;
+use App\Models\HistoryDocumentModel;
 use App\Models\JenisDocumentModel;
 use App\Models\MydocumentModel;
 
@@ -12,23 +13,26 @@ class Home extends BaseController
     protected $divisiModel;
     protected $jenisModel;
     protected $docModel;
+    protected $historyModel;
 
     public function __construct()
     {
         $this->divisiModel = new DivisiModel();
         $this->jenisModel = new JenisDocumentModel();
         $this->docModel = new MydocumentModel();
+        $this->historyModel = new HistoryDocumentModel();
     }
 
     public function index()
     {
         return view('Fe/home', [
             'navs' => $this->getNavs(),
-            ...$this->getJenis()
+            ...$this->getJenis(),
+            ...$this->getHistoryDoc()
         ]);
     }
 
-    public function menus(string $segment1, ?string $segment2 = null, ?string $segment3 = null)
+    public function menus(string $segment1 , ?string $segment2 = null, ?string $segment3 = null)
     {
         $navs = $this->getNavs();
         $jenisData = $this->getJenis();
@@ -36,6 +40,7 @@ class Home extends BaseController
         $jenisSlug = $segment3 ? $segment2 : $segment1;
 
         $jenis = $this->resolveJenis($jenisSlug);
+        // dd($jenis);
         $divisiId = $this->resolveDivisi($segment3);
 
         $docs = $this->getDocs($jenis->id, $divisiId);
@@ -69,6 +74,9 @@ class Home extends BaseController
         // ======================
         // VIEW MENU
         // ======================
+
+        //ini untuk view doc non iso
+
         return view('Fe/view_menus', [
             'navs' => $navs,
             'docs' => $docs,
@@ -82,15 +90,14 @@ class Home extends BaseController
 
     private function resolveJenis($slug)
     {
-        if ($slug === 'manual-mutu') {
-            $jenis = $this->jenisModel
-                ->where('jenis_document', 'Manual Mutu')
-                ->first();
-        } else {
-            $jenis = $this->jenisModel
-                ->where('slug', $slug)
-                ->first();
-        }
+        $map = [
+            'manual-mutu'      => 'Manual Mutu',
+            'document-non-iso' => 'Document Non ISO',
+        ];
+
+        $jenis = $this->jenisModel
+            ->where(isset($map[$slug]) ? 'jenis_document' : 'slug', $map[$slug] ?? $slug)
+            ->first();
 
         if (!$jenis) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
@@ -117,19 +124,23 @@ class Home extends BaseController
 
     private function getDocs($jenisId, $divisiId = null)
     {
-        $builder = $this->docModel->where('jenis_id', $jenisId);
+        $builder = $this->docModel->builder();
 
-        if ($divisiId) {
+        $builder->where('jenis_id', $jenisId);
+
+        if ($divisiId !== null) {
             $builder->where('divisi_id', $divisiId);
         }
 
         return $builder
             ->orderBy("
             LEFT(no_document, LENGTH(no_document) - LENGTH(SUBSTRING_INDEX(no_document, '-', -1)) - 1)
-        ", "ASC", false)
+        ", "", false)
+
             ->orderBy("
             CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(no_document, '-', -1), '.', 1) AS UNSIGNED)
-        ", "ASC", false)
+        ", "", false)
+
             ->orderBy("
             CAST(
                 IF(LOCATE('.', no_document),
@@ -137,8 +148,10 @@ class Home extends BaseController
                     0
                 ) AS UNSIGNED
             )
-        ", "ASC", false)
-            ->findAll();
+        ", "", false)
+
+            ->get()
+            ->getResult();
     }
 
     private function getNavs()
@@ -162,6 +175,18 @@ class Home extends BaseController
                 ->findAll(),
             'jenisOnly' => $this->jenisModel->where('jenis_document', 'Manual Mutu')->first(),
             'nonIso'    => $this->jenisModel->where('jenis_document', 'Document Non ISO')->first(),
+        ];
+    }
+
+    private function getHistoryDoc()
+    {
+        return [
+            'histCreate' => $this->historyModel
+                ->where('action', 'create')
+                ->findAll(5),
+            'histUpdate' => $this->historyModel
+                ->where('action', 'update')
+                ->findAll(5),
         ];
     }
 

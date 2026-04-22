@@ -18,8 +18,9 @@ $seg3 = $segments[2] ?? '';
                     <span class="menu-text">Home</span>
                 </a>
             </div>
+            
             <?php if ($jenisOnly) : ?>
-                <div class="menu-item <?= nav_active_route('home.menus') ?>">
+                <div class="menu-item <?= ($seg1 === $jenisOnly->slug) ? 'active' : '' ?>">
                     <a href="<?= base_url(route_to('home.menus', $jenisOnly->slug)); ?>" class="menu-link">
                         <span class="menu-text"><?= $jenisOnly->jenis_document; ?></span>
                     </a>
@@ -70,8 +71,8 @@ $seg3 = $segments[2] ?? '';
             <?php endforeach; ?>
 
             <?php if ($nonIso) : ?>
-                <div class="menu-item ">
-                    <a href="" class="menu-link">
+                <div class="menu-item <?= ($seg1 === $nonIso->slug) ? 'active' : '' ?>">
+                    <a href="<?= base_url(route_to('home.menus',$nonIso->slug)); ?>" class="menu-link">
                         <span class="menu-text"><?= $nonIso->jenis_document; ?></span>
                     </a>
                 </div>
