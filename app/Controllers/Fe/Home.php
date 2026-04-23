@@ -108,7 +108,7 @@ class Home extends BaseController
 
             // ISO
             if ($row->divisi_id) {
-                $map['iso'][$row->divisi_id][$row->jenis_id] = $row->total;
+                $map['divisi'][$row->divisi_id][$row->jenis_id] = $row->total;
             } else {
                 $map['manual-mutu'][$row->jenis_id] = $row->total;
             }

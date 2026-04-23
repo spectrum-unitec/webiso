@@ -57,7 +57,7 @@ $seg3 = $segments[2] ?? '';
                                         <?php foreach ($jenisAll as $jenis) : ?>
 
                                             <?php
-                                            $total = $countDocs['iso'][$row->id][$jenis->id] ?? 0;
+                                            $total = $countDocs['divisi'][$row->id][$jenis->id] ?? 0;
                                             ?>
 
                                             <!-- JENIS -->
