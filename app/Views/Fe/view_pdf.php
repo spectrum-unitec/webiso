@@ -29,6 +29,7 @@
             <div class="col-xl-3">
                 <nav id="sidebar-bootstrap" class="navbar navbar-sticky d-none d-xl-block">
                     <nav class="nav">
+                        <h6 class="d-flex" style="padding: .1875rem 1.5rem;">List Dokumen</h6>
 
                         <?php
                         $segments = current_url(true)->getSegments();
