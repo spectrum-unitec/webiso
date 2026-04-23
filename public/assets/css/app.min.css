@@ -26302,7 +26302,8 @@ fieldset:disabled .btn {
 }
 
 .app-content {
-    padding: 1.875rem 0;
+    overflow-x: hidden;
+    padding-top: 1.875rem ;
     position: relative;
     min-height: 100%;
     /* margin-left: 15rem */
