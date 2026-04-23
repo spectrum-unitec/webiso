@@ -28,8 +28,8 @@
             <!-- BEGIN col-3 -->
             <div class="col-xl-3">
                 <nav id="sidebar-bootstrap" class="navbar navbar-sticky d-none d-xl-block">
+                    <h5 class="d-flex" style="padding: .1875rem 1.5rem;">List Dokumen</h5>
                     <nav class="nav">
-                        <h5 class="d-flex" style="padding: .1875rem 1.5rem;">List Dokumen</h5>
 
                         <?php
                         $segments = current_url(true)->getSegments();
