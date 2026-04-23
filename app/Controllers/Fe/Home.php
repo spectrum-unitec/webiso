@@ -106,17 +106,11 @@ class Home extends BaseController
 
         foreach ($rows as $row) {
 
-            // NON ISO
-            if ($row->jenis_id == 6) {
-                $map['non_iso'][$row->sub_category_id] = $row->total;
-                continue;
-            }
-
             // ISO
             if ($row->divisi_id) {
                 $map['iso'][$row->divisi_id][$row->jenis_id] = $row->total;
             } else {
-                $map['iso'][$row->jenis_id] = $row->total;
+                $map['manual-mutu'][$row->jenis_id] = $row->total;
             }
         }
 

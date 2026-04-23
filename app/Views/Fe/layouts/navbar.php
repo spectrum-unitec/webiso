@@ -22,7 +22,7 @@ $seg3 = $segments[2] ?? '';
             <?php if ($jenisOnly) : ?>
 
                 <?php
-                $total = $countDocs['iso'][$jenisOnly->id] ?? 0;
+                $total = $countDocs['manual-mutu'][$jenisOnly->id] ?? 0;
                 ?>
 
                 <div class="menu-item <?= ($seg1 === $jenisOnly->slug) ? 'active' : '' ?>">
