@@ -27,8 +27,8 @@
             <!-- END col-9-->
             <!-- BEGIN col-3 -->
             <div class="col-xl-3">
+                <h5 class="d-flex" style="padding: .1875rem 1.5rem; min-height: 100px;">List Dokumen</h5>
                 <nav id="sidebar-bootstrap" class="navbar navbar-sticky d-none d-xl-block">
-                    <h5 class="d-flex" style="padding: .1875rem 1.5rem;">List Dokumen</h5>
                     <nav class="nav">
 
                         <?php
