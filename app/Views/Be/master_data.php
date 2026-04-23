@@ -187,9 +187,11 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <?php foreach ($department as $row) :
-                                                    $no = 1;
-                                                ?>
+
+                                                <?php
+                                                $no = 1;
+
+                                                foreach ($department as $row) : ?>
                                                     <tr>
                                                         <td><?= $no++; ?></td>
                                                         <td><?= $row->nama_dept; ?></td>
