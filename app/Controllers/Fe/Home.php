@@ -30,6 +30,7 @@ class Home extends BaseController
     {
         return view('Fe/home', [
             'navs' => $this->getNavs(),
+            'countDocs' => $this->getCountDoc(),
             ...$this->getJenis(),
             ...$this->getHistoryDoc()
         ]);
@@ -68,6 +69,7 @@ class Home extends BaseController
                 'segment1' => $segment1,
                 'segment2' => $segment2,
                 'segment3' => $segment3,
+                'countDocs' => $this->getCountDoc(),
                 ...$this->getHistoryDoc(),
                 ...$jenisData
             ]);
@@ -86,6 +88,7 @@ class Home extends BaseController
             'segment1' => $segment1,
             'segment2' => $segment2,
             'segment3' => $segment3,
+            'countDocs' => $this->getCountDoc(),
             ...$this->getHistoryDoc(),
             ...$jenisData
         ]);
@@ -365,6 +368,7 @@ class Home extends BaseController
         return view('Fe/view_sub_category', [
             'navs' => $this->getNavs(),
             'listCategory' => $listCategory,
+            'countDocs' => $this->getCountDoc(),
             ...$this->getJenis(),
             ...$this->getHistoryDoc()
         ]);
