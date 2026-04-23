@@ -51,7 +51,7 @@
                                     <div class="list-group-item d-flex align-items-center">
                                         <div class="flex-fill px-3 py-1">
                                             <div class="fw-semibold"><?= $list->nama; ?></div>
-                                            <div class="small text-body text-opacity-50">102 dokumen</div>
+                                            <div class="small text-body text-opacity-50"><?= $list->total_doc; ?> dokumen</div>
                                         </div>
                                     </div>
                                 </a>
@@ -59,9 +59,6 @@
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
-
-
-
 
             </div>
             <!-- END col-9-->
