@@ -30,7 +30,6 @@ class Home extends BaseController
     {
         return view('Fe/home', [
             'navs' => $this->getNavs(),
-            'countDocs' => $this->getCountDoc(),
             ...$this->getJenis(),
             ...$this->getHistoryDoc()
         ]);
