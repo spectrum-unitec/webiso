@@ -51,7 +51,7 @@ class SubCategoryNonIsoModel extends Model
             ->select('
             sc.*,
             dj.slug AS slug_jenis_doc,
-            COUNT(d.id) AS total_doc
+            COUNT(DISTINCT d.id) AS total_doc
         ')
             ->join('document_jenis dj', 'dj.id = sc.jenis_id', 'left')
             ->join('my_documents d', 'd.sub_category_id = sc.id', 'left')
