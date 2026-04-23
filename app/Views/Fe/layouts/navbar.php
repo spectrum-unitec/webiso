@@ -18,11 +18,16 @@ $seg3 = $segments[2] ?? '';
                     <span class="menu-text">Home</span>
                 </a>
             </div>
-            
+
             <?php if ($jenisOnly) : ?>
+
+                <?php
+                $total = $countDocs['iso'][$jenisOnly->id] ?? 0;
+                ?>
+
                 <div class="menu-item <?= ($seg1 === $jenisOnly->slug) ? 'active' : '' ?>">
                     <a href="<?= base_url(route_to('home.menus', $jenisOnly->slug)); ?>" class="menu-link">
-                        <span class="menu-text"><?= $jenisOnly->jenis_document; ?></span>
+                        <span class="menu-text"><?= $jenisOnly->jenis_document . ' (' . $total . ')' ?></span>
                     </a>
                 </div>
             <?php endif; ?>
@@ -51,10 +56,14 @@ $seg3 = $segments[2] ?? '';
 
                                         <?php foreach ($jenisAll as $jenis) : ?>
 
+                                            <?php
+                                            $total = $countDocs['iso'][$row->id][$jenis->id] ?? 0;
+                                            ?>
+
                                             <!-- JENIS -->
                                             <div class="menu-item <?= ($seg2 === $jenis->slug && $seg3 === $row->kode_divisi) ? 'active' : ''; ?>">
                                                 <a href="<?= base_url(route_to('home.menus.divisi', url_title($dept['nama_dept'], '-', true), $jenis->slug, $row->kode_divisi)); ?>" class="menu-link">
-                                                    <span class="menu-text"><?= $jenis->jenis_document; ?></span>
+                                                    <span class="menu-text"><?= $jenis->jenis_document; ?> (<?= $total; ?>)</span>
                                                 </a>
                                             </div>
 

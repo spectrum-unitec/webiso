@@ -30,6 +30,7 @@ class Home extends BaseController
     {
         return view('Fe/home', [
             'navs' => $this->getNavs(),
+            'countDocs' => $this->getCountDoc(),
             ...$this->getJenis(),
             ...$this->getHistoryDoc()
         ]);
@@ -68,6 +69,7 @@ class Home extends BaseController
                 'segment1' => $segment1,
                 'segment2' => $segment2,
                 'segment3' => $segment3,
+                'countDocs' => $this->getCountDoc(),
                 ...$this->getHistoryDoc(),
                 ...$jenisData
             ]);
@@ -86,9 +88,39 @@ class Home extends BaseController
             'segment1' => $segment1,
             'segment2' => $segment2,
             'segment3' => $segment3,
+            'countDocs' => $this->getCountDoc(),
             ...$this->getHistoryDoc(),
             ...$jenisData
         ]);
+    }
+
+    private function getCountDoc(): array
+    {
+        $rows = $this->docModel
+            ->select('jenis_id, divisi_id, sub_category_id, COUNT(*) as total')
+            ->where('deleted_at', null)
+            ->groupBy(['jenis_id', 'divisi_id', 'sub_category_id'])
+            ->findAll();
+
+        $map = [];
+
+        foreach ($rows as $row) {
+
+            // NON ISO
+            if ($row->jenis_id == 6) {
+                $map['non_iso'][$row->sub_category_id] = $row->total;
+                continue;
+            }
+
+            // ISO
+            if ($row->divisi_id) {
+                $map['iso'][$row->divisi_id][$row->jenis_id] = $row->total;
+            } else {
+                $map['iso'][$row->jenis_id] = $row->total;
+            }
+        }
+
+        return $map;
     }
 
     private function resolveJenis($slug)
@@ -336,6 +368,7 @@ class Home extends BaseController
         return view('Fe/view_sub_category', [
             'navs' => $this->getNavs(),
             'listCategory' => $listCategory,
+            'countDocs' => $this->getCountDoc(),
             ...$this->getJenis(),
             ...$this->getHistoryDoc()
         ]);
