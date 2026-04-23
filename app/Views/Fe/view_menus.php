@@ -53,9 +53,21 @@
                             ?? $jenisOnly->slug
                             ?? $nonIso->slug;
 
-                        $url = in_array($segment1, ['manual-mutu', 'document-non-iso'])
-                            ? base_url(route_to('home.menus', $jenisSlug))
-                            : base_url(route_to('home.menus.divisi', $segment1, $jenisSlug, $segment3));
+                        $url = null;
+
+                        switch ($segment1) {
+                            case 'manual-mutu':
+                                $url = base_url(route_to('home.menus', $jenisSlug));
+                                break;
+
+                            case 'document-non-iso':
+                                $url = base_url(route_to('home.menus.non.iso', $jenisSlug, $segment2));
+                                break;
+
+                            default:
+                                $url = base_url(route_to('home.menus.divisi', $segment1, $jenisSlug, $segment3));
+                                break;
+                        }
 
                         ?>
 

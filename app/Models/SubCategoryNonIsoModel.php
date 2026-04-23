@@ -4,15 +4,15 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class MydocumentModel extends Model
+class SubCategoryNonIsoModel extends Model
 {
-    protected $table            = 'my_documents';
+    protected $table            = 'sub_categories';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'object';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['no_document', 'slug', 'nama_document', 'level_id', 'jenis_id', 'divisi_id', 'sub_category_id', 'file', 'created_at', 'updated_at', 'deleted_at'];
+    protected $allowedFields    = ['jenis_id', 'slug', 'nama', 'created_at', 'updated_at'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
@@ -44,11 +44,16 @@ class MydocumentModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
+
     public function getDataJoin()
     {
-        return $this->select('my_documents.id,my_documents.no_document,my_documents.nama_document,my_documents.created_at,my_documents.updated_at,dl.level,dj.jenis_document')
-            ->join('document_level_iso dl', 'dl.id = my_documents.level_id', 'left')
-            ->join('document_jenis dj', 'dj.id = my_documents.jenis_id', 'left')
-            ->orderBy('my_documents.created_at', 'DESC');
+        return $this->from('sub_categories sc')
+            ->select('
+            sc.*,
+            dj.slug AS slug_jenis_doc
+        ')
+            ->join('document_jenis dj', 'dj.id = sc.jenis_id', 'left')
+            ->groupBy('sc.id')
+            ->orderBy('sc.id', 'DESC');
     }
 }

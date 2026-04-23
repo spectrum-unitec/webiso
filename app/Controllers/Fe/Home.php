@@ -7,6 +7,7 @@ use App\Models\DivisiModel;
 use App\Models\HistoryDocumentModel;
 use App\Models\JenisDocumentModel;
 use App\Models\MydocumentModel;
+use App\Models\SubCategoryNonIsoModel;
 
 class Home extends BaseController
 {
@@ -14,6 +15,7 @@ class Home extends BaseController
     protected $jenisModel;
     protected $docModel;
     protected $historyModel;
+    protected $subCategoryNonIsoModel;
 
     public function __construct()
     {
@@ -21,6 +23,7 @@ class Home extends BaseController
         $this->jenisModel = new JenisDocumentModel();
         $this->docModel = new MydocumentModel();
         $this->historyModel = new HistoryDocumentModel();
+        $this->subCategoryNonIsoModel = new SubCategoryNonIsoModel();
     }
 
     public function index()
@@ -40,11 +43,9 @@ class Home extends BaseController
         $jenisSlug = $segment3 ? $segment2 : $segment1;
 
         $jenis = $this->resolveJenis($jenisSlug);
-        // dd($jenis);
         $divisiId = $this->resolveDivisi($segment3);
-
-        $docs = $this->getDocs($jenis->id, $divisiId);
-
+        $subCategory = $this->resolveSubCategory($segment2);
+        $docs = $this->getDocs($jenis->id, $divisiId, $subCategory);
         $docSlug = $this->request->getGet('doc');
 
         // ======================
@@ -67,6 +68,7 @@ class Home extends BaseController
                 'segment1' => $segment1,
                 'segment2' => $segment2,
                 'segment3' => $segment3,
+                ...$this->getHistoryDoc(),
                 ...$jenisData
             ]);
         }
@@ -84,6 +86,7 @@ class Home extends BaseController
             'segment1' => $segment1,
             'segment2' => $segment2,
             'segment3' => $segment3,
+            ...$this->getHistoryDoc(),
             ...$jenisData
         ]);
     }
@@ -122,14 +125,30 @@ class Home extends BaseController
         return $divisi->id;
     }
 
-    private function getDocs($jenisId, $divisiId = null)
+    private function resolveSubCategory($slug)
+    {
+        if (!$slug) return null;
+
+        $subCat = $this->subCategoryNonIsoModel
+            ->select('id')
+            ->where('slug', $slug)
+            ->first();
+
+        return $subCat->id ?? null;
+    }
+
+    private function getDocs($jenisId, $divisiId = null, $subCatId = null)
     {
         $builder = $this->docModel->builder();
 
         $builder->where('jenis_id', $jenisId);
 
-        if ($divisiId !== null) {
+        if (!empty($divisiId)) {
             $builder->where('divisi_id', $divisiId);
+        }
+
+        if (!empty($subCatId)) {
+            $builder->where('sub_category_id', $subCatId);
         }
 
         return $builder
@@ -307,6 +326,18 @@ class Home extends BaseController
         return $this->response->setJSON([
             'status' => 'error',
             'message' => 'Gagal menyimpan data'
+        ]);
+    }
+
+    public function listSubCategories()
+    {
+        $listCategory = $this->subCategoryNonIsoModel->getDataJoin()->findAll();
+
+        return view('Fe/view_sub_category', [
+            'navs' => $this->getNavs(),
+            'listCategory' => $listCategory,
+            ...$this->getJenis(),
+            ...$this->getHistoryDoc()
         ]);
     }
 }

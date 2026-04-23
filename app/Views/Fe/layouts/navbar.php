@@ -72,7 +72,7 @@ $seg3 = $segments[2] ?? '';
 
             <?php if ($nonIso) : ?>
                 <div class="menu-item <?= ($seg1 === $nonIso->slug) ? 'active' : '' ?>">
-                    <a href="<?= base_url(route_to('home.menus',$nonIso->slug)); ?>" class="menu-link">
+                    <a href="<?= base_url(route_to('home.doc.non.iso')); ?>" class="menu-link">
                         <span class="menu-text"><?= $nonIso->jenis_document; ?></span>
                     </a>
                 </div>

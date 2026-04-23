@@ -72,5 +72,7 @@ $routes->group('', ['namespace' => 'App\Controllers\Fe'], function ($routes) {
     $routes->get('/pdf/(:num)', 'Home::viewPdf/$1', ['as' => 'pdf']);
     $routes->get('(:segment)/(:segment)/(:segment)', 'Home::menus/$1/$2/$3', ['as' => 'home.menus.divisi']);
     $routes->post('request-document', 'Home::requestDoc', ['as' => 'home.req_doc']);
+    $routes->get('document-non-iso', 'Home::listSubCategories', ['as' => 'home.doc.non.iso']);
+    $routes->get('(:segment)/(:segment)', 'Home::menus/$1/$2', ['as' => 'home.menus.non.iso']);
     $routes->get('(:segment)', 'Home::menus/$1', ['as' => 'home.menus']);
 });

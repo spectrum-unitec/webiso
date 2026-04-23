@@ -68,6 +68,21 @@
                         </select>
                     </div>
 
+                    <!-- NON ISO ONLY -->
+                    <div id="nonIsoFields" style="display:none;">
+                        <div class="mb-3">
+                            <label class="form-label">Sub Kategori</label>
+                            <select name="sub" id="subCategory" class="form-select">
+                                <option value="">Pilih Kategori</option>
+                                <?php foreach ($subCategories as $row) : ?>
+                                    <option value="<?= $row->id; ?>">
+                                        <?= $row->nama; ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+
                     <!-- NO -->
                     <div class="mb-3">
                         <label class="form-label">NO Dokumen</label>
@@ -82,7 +97,6 @@
                             placeholder="Masukan nama dokumen">
                     </div>
 
-                    <!-- ✅ ISO FIELDS -->
                     <!-- ISO ONLY -->
                     <div id="isoFields">
 
@@ -254,19 +268,36 @@
 
             const tipeDoc = document.getElementById('tipeDoc');
             const isoFields = document.getElementById('isoFields');
+            const nonIsoFields = document.getElementById('nonIsoFields');
+
+            const subCategory = document.getElementById('subCategory');
 
             function toggleForm() {
                 if (tipeDoc.value === 'non_iso') {
+
+                    // NON ISO
                     isoFields.style.display = 'none';
+                    nonIsoFields.style.display = 'block';
+
+                    // reset ISO field
+                    isoFields.querySelectorAll('select').forEach(el => el.value = '');
+
                 } else {
+
+                    // ISO
                     isoFields.style.display = 'block';
+                    nonIsoFields.style.display = 'none';
+
+                    // reset NON ISO
+                    if (subCategory) subCategory.value = '';
                 }
             }
 
-            // reset tiap buka modal
+            // reset setiap buka modal
             tipeDoc.value = 'iso';
             toggleForm();
 
+            // event change
             tipeDoc.onchange = toggleForm;
         });
 
@@ -368,27 +399,35 @@
         //created form
         const formCreate = document.getElementById('formCreateDocument');
 
-        formCreate.addEventListener('submit', async function(e) {
+        formCreate.onsubmit = async function(e) {
             e.preventDefault();
 
             const form = e.target;
             const formData = new FormData(form);
 
             const tipeDoc = document.getElementById('tipeDoc');
+            const isoFields = document.getElementById('isoFields');
+            const nonIsoFields = document.getElementById('nonIsoFields');
+            const subCategory = document.getElementById('subCategory');
+            const fileInput = document.getElementById('pdfFile');
 
+            // 🔥 HANDLE ISO / NON ISO
             if (tipeDoc.value === 'non_iso') {
                 formData.set('tipe', 'non_iso');
 
+                // hapus field ISO
                 formData.delete('level');
                 formData.delete('jenis');
                 formData.delete('divisi');
 
+                // pastikan sub kategori ada
+                formData.set('sub_category', subCategory.value);
             } else {
                 formData.set('tipe', 'iso');
+
+                // hapus sub kategori
+                formData.delete('sub_category');
             }
-
-            const fileInput = document.getElementById('pdfFile');
-
 
             try {
                 const res = await fetch('<?= base_url(route_to('admin.mydocument.store')) ?>', {
@@ -403,23 +442,29 @@
 
                 if (data.status) {
 
+                    // 🔥 RESET FORM
                     form.reset();
 
-                    // ✅ reset toggle + UI
-                    const isoFields = document.getElementById('isoFields');
-                    const labelTipe = document.getElementById('labelTipe');
+                    // reset file input (biar bersih total)
+                    fileInput.value = '';
 
-                    tipeDoc.checked = true;
+                    // reset UI
                     tipeDoc.value = 'iso';
                     isoFields.style.display = 'block';
-                    // labelTipe.textContent = 'ISO';
+                    nonIsoFields.style.display = 'none';
 
-                    // tutup modal
+                    if (subCategory) subCategory.value = '';
+
+                    // 🔥 TUTUP MODAL (PALING STABIL)
                     const modalEl = document.getElementById('createDocument');
-                    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-                    console.log('modal instance:', bootstrap.Modal.getInstance(modalEl));
-                    modal.hide();
-                    console.log(fileInput.files[0]);
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+
+                    // fallback kalau instance null
+                    modalEl.classList.remove('show');
+                    modalEl.style.display = 'none';
+                    document.body.classList.remove('modal-open');
+                    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
 
                     // reload table
                     table.ajax.reload(false);
@@ -428,7 +473,7 @@
             } catch (error) {
                 console.error(error);
             }
-        });
+        };
 
         //event delegation
         document.querySelector('#datatableDefault')

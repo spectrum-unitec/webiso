@@ -118,6 +118,52 @@
                     </div>
                     <!-- END #listWidget -->
 
+                    <!-- BEGIN #listWidget -->
+                    <div id="subCategoryNonIso" class="mb-5">
+                        <div class="row">
+                            <h4>Sub Kategori Dokumen Non ISO</h4>
+                            <div class="col-12">
+                                <div class="mb-2">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <button class="btn btn-primary" data-bs-target="#createModalSubCategoryNonIso" data-bs-toggle="modal"><i class="far fa-plus"></i> Tambah</button>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <table id="datatableDefault" class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>No</th>
+                                                    <th>Nama</th>
+                                                    <th>Dibuat</th>
+                                                    <th>Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php
+                                                $no = 1;
+                                                foreach ($subCategoryNonIso as $row) : ?>
+                                                    <tr>
+                                                        <td><?= $no++; ?></td>
+                                                        <td><?= $row->nama; ?></td>
+                                                        <td><?= $row->created_at; ?></td>
+                                                        <td width="120px">
+                                                            <a href="" class="btn btn-sm btn-warning">Edit</a>
+                                                            <a href="" class="btn btn-sm btn-danger">Hapus</a>
+                                                        </td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- END #listWidget -->
+
+
                     <!-- BEGIN #statsWidget -->
                     <div id="dept" class="mb-5">
                         <div class="row">
@@ -236,6 +282,7 @@
                         <nav class="nav">
                             <a class="nav-link" href="#levelDocument" data-toggle="scroll-to">Level Dokumen ISO</a>
                             <a class="nav-link" href="#jenisDocument" data-toggle="scroll-to">Jenis Dokumen</a>
+                            <a class="nav-link" href="#subCategoryNonIso" data-toggle="scroll-to">Sub Kategori Non ISO</a>
                             <a class="nav-link" href="#dept" data-toggle="scroll-to">Department</a>
                             <a class="nav-link" href="#kodeBagian" data-toggle="scroll-to">Divisi</a>
                         </nav>
@@ -290,6 +337,31 @@
                     <div class="mb-3">
                         <label class="form-label" for="exampleFormControlInput1">Jenis Dokumen</label>
                         <input type="text" name="jenis" class="form-control" placeholder="Masukan jenis dokumen" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Create Modal SubCategoryNonIso-->
+<div class="modal fade" id="createModalSubCategoryNonIso" tabindex="-1" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Tambah Sub Kategori Non ISO</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="<?= base_url(route_to('admin.masterdata.store')); ?>" method="POST">
+                <?= csrf_field(); ?>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label" for="exampleFormControlInput1">Nama Sub Kategori</label>
+                        <input type="text" name="sub" class="form-control" placeholder="Masukan nama sub kategori" required>
                     </div>
                 </div>
                 <div class="modal-footer">

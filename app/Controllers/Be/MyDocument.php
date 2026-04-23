@@ -9,6 +9,7 @@ use App\Models\HistoryDocumentModel;
 use App\Models\JenisDocumentModel;
 use App\Models\LevelDocument;
 use App\Models\MydocumentModel;
+use App\Models\SubCategoryNonIsoModel;
 use CodeIgniter\I18n\Time;
 use Hermawan\DataTables\DataTable;
 
@@ -17,12 +18,14 @@ class MyDocument extends BaseController
     protected $docModel;
     protected $jenisDocModel;
     protected $historyDocModel;
+    protected $subCategoryModel;
 
     public function __construct()
     {
         $this->docModel = new MydocumentModel();
         $this->jenisDocModel = new JenisDocumentModel();
         $this->historyDocModel = new HistoryDocumentModel();
+        $this->subCategoryModel = new SubCategoryNonIsoModel();
     }
 
     public function index()
@@ -42,27 +45,27 @@ class MyDocument extends BaseController
         $modelDivisi = new DivisiModel();
         $divisi = $modelDivisi->findAll();
 
-        return view('Be/my_document', compact('bread', 'levelDoc', 'jenisDoc', 'divisi'));
+        $subCategories = $this->subCategoryModel
+            ->findAll();
+
+        return view('Be/my_document', compact('bread', 'levelDoc', 'jenisDoc', 'divisi', 'subCategories'));
     }
 
     public function ajaxStore()
     {
         if (!$this->request->isAJAX()) {
-            return $this->response
-                ->setStatusCode(403)
-                ->setJSON([
-                    'status' => false,
-                    'message' => 'Forbidden access'
-                ]);
+            return $this->response->setStatusCode(403)->setJSON([
+                'status' => false,
+                'message' => 'Forbidden access'
+            ]);
         }
 
-        $tipe     = $this->request->getPost('tipe');
-        $divisiId = $this->request->getPost('divisi');
+        $tipe        = $this->request->getPost('tipe');
+        $divisiId    = $this->request->getPost('divisi');
+        $subCategory = $this->request->getPost('sub_category');
 
         $pdfFile  = $this->request->getFile('pdf_file');
         $fileName = null;
-
-        // dd($pdfFile);
 
         // ================= FILE =================
         if ($pdfFile && $pdfFile->isValid() && !$pdfFile->hasMoved()) {
@@ -100,34 +103,53 @@ class MyDocument extends BaseController
             }
         }
 
+        if ($tipe === 'non_iso') {
+            if (!$subCategory) {
+                return $this->response->setJSON([
+                    'status' => false,
+                    'message' => 'Kategori Non ISO wajib dipilih'
+                ]);
+            }
+        }
+
+        // ================= AMBIL JENIS NON ISO =================
         $jenisNonIso = $this->jenisDocModel
-            ->where('jenis_document', 'Document Non ISO')
+            ->where('slug', 'document-non-iso') // ✅ lebih aman
             ->first();
 
         $jenisNonIsoId = $jenisNonIso->id ?? null;
 
-        // ================= INSERT DOCUMENT =================
+        // ================= INSERT =================
         $insertData = [
             'no_document'   => $this->request->getPost('no_doc'),
             'slug'          => url_title($this->request->getPost('nm_doc'), '-', true),
             'nama_document' => $this->request->getPost('nm_doc'),
-            'level_id'      => $tipe === 'iso' ? $this->request->getPost('level') : null,
-            'jenis_id'      => $tipe === 'iso'
-                ? $this->request->getPost('jenis')
-                : $jenisNonIsoId,
-            'divisi_id'     => $tipe === 'iso' ? (empty($divisiId) ? null : $divisiId) : null,
             'file'          => $fileName
         ];
+
+        if ($tipe === 'iso') {
+
+            $insertData['level_id']  = $this->request->getPost('level');
+            $insertData['jenis_id']  = $this->request->getPost('jenis');
+            $insertData['divisi_id'] = empty($divisiId) ? null : $divisiId;
+            $insertData['sub_category_id'] = null;
+        } else {
+
+            $insertData['level_id']  = null;
+            $insertData['jenis_id']  = $jenisNonIsoId;
+            $insertData['divisi_id'] = null;
+            $insertData['sub_category_id'] = $subCategory; // 🔥 penting
+        }
 
         $this->docModel->insert($insertData);
         $documentId = $this->docModel->getInsertID();
 
-        // ================= INSERT HISTORY =================
+        // ================= HISTORY =================
         $this->historyDocModel->insert([
             'document_id'   => $documentId,
             'action'        => 'create',
-            'no_document' => $insertData['no_document'],
-            'nama_document'  => $insertData['nama_document'],
+            'no_document'   => $insertData['no_document'],
+            'nama_document' => $insertData['nama_document'],
             'created_at'    => date('Y-m-d H:i:s')
         ]);
 

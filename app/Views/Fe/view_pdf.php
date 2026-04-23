@@ -27,12 +27,10 @@
             <!-- END col-9-->
             <!-- BEGIN col-3 -->
             <div class="col-xl-3">
-                <!-- BEGIN #sidebar-bootstrap -->
                 <nav id="sidebar-bootstrap" class="navbar navbar-sticky d-none d-xl-block">
                     <nav class="nav">
-                        <?php
-                        $no = 1;
 
+                        <?php
                         $segments = current_url(true)->getSegments();
 
                         $segment1 = $segments[0] ?? '';
@@ -41,42 +39,39 @@
 
                         $currentDoc = service('request')->getGet('doc');
 
-                        $jenisSlug = $jenisDoc
-                            ? $jenisDoc->slug
-                            : $jenisOnly->slug;
+                        $jenisSlug = $jenisDoc->slug
+                            ?? $jenisOnly->slug
+                            ?? $nonIso->slug;
+
+                        switch ($segment1) {
+                            case 'manual-mutu':
+                                $baseUrl = base_url(route_to('home.menus', $jenisSlug));
+                                break;
+
+                            case 'document-non-iso':
+                                $baseUrl = base_url(route_to('home.menus.non.iso', $jenisSlug, $segment2));
+                                break;
+
+                            default:
+                                $baseUrl = base_url(route_to('home.menus.divisi', $segment1, $jenisSlug, $segment3));
+                                break;
+                        }
                         ?>
 
                         <?php foreach ($docs as $doc) : ?>
                             <?php
-                            if ($segment2 !== '') {
-                                // route dengan divisi
-                                $baseUrl = base_url(route_to(
-                                    'home.menus.divisi',
-                                    $segment1,
-                                    $jenisSlug,
-                                    $segment3
-                                ));
-                            } else {
-                                // route tanpa divisi
-                                $baseUrl = base_url(route_to(
-                                    'home.menus',
-                                    $jenisSlug
-                                ));
-                            }
-
                             $url    = $baseUrl . '?doc=' . $doc->slug;
                             $active = ($currentDoc === $doc->slug) ? 'active' : '';
                             ?>
 
-                            <a class="nav-link <?= $active ?>" href="<?= $url ?>">
+                            <a class="nav-link <?= $active ?>" href="<?= esc($url) ?>">
                                 <span class="badge bg-primary"><?= esc($doc->no_document); ?></span>
                                 <?= esc($doc->nama_document) ?>
                             </a>
                         <?php endforeach; ?>
+
                     </nav>
                 </nav>
-
-                <!-- END #sidebar-bootstrap -->
             </div>
             <!-- END col-3 -->
         </div>

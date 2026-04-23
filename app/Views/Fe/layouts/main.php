@@ -38,11 +38,12 @@
             z-index: 9999;
         }
     </style>
+     <?= $this->renderSection('pageStyles'); ?>
 </head>
 
 <body class='pace-done app-with-bg'>
     <!-- BEGIN #app -->
-    <div id="app" class="app app-with-top-nav ">
+    <div id="app" class="app app-with-top-nav">
         <?= $this->include('Fe/layouts/header'); ?>
 
         <?= $this->include('Fe/layouts/navbar'); ?>
