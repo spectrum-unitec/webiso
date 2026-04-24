@@ -228,11 +228,11 @@ class Home extends BaseController
         return [
             'histCreate' => $this->historyModel
                 ->where('action', 'create')
-                ->orderBy('id')
+                ->orderBy('id', 'DESC')
                 ->findAll(5),
             'histUpdate' => $this->historyModel
                 ->where('action', 'update')
-                ->orderBy('id')
+                ->orderBy('id', 'DESC')
                 ->findAll(5),
         ];
     }
