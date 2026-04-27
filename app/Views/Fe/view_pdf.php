@@ -27,9 +27,15 @@ $segment2 = $uri->getSegment(2);
         <div class="row">
             <!-- BEGIN col-9 -->
             <div class="col-xl-9">
-                <h1 class="page-header">
-                    #<?= $doc->no_document; ?> <small><?= $doc->nama_document; ?></small>
-                </h1>
+                <div class="d-flex justify-content-between align-items-center">
+                    <h1 class="page-header">
+                        #<?= $doc->no_document; ?> <small><?= $doc->nama_document; ?></small>
+                    </h1>
+    
+                    <a href="<?= previous_url() ?>" class="btn btn-outline-danger">
+                        <i class="bi bi-arrow-left"></i> Kembali
+                    </a>
+                </div>
 
                 <hr class="mb-4">
 
