@@ -11,6 +11,10 @@ $segment2 = $uri->getSegment(2);
         max-height: 300px;
         overflow-y: scroll;
     }
+    .active {
+        color: #212837;
+        font-weight: 600;
+    }
 </style>
 <?= $this->endSection(); ?>
 
