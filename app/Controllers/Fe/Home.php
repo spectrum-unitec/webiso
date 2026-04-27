@@ -73,7 +73,7 @@ class Home extends BaseController
             $rekamanMutuList = $this->pivotDocRekamanMutuModel->getJoinData($doc->id)->findAll();
             $docTerkaitList = $this->pivotDocTerkaitModel->getJoinData($doc->id)->findAll();
 
-            // dd($rekamanMutuList);
+            // dd($docTerkaitList);
 
             return view('Fe/view_pdf', [
                 'navs' => $navs,

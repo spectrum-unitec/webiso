@@ -47,20 +47,31 @@ class PivotDocumentTerkaitModel extends Model
     public function getJoinData($id)
     {
         return $this->from('pivot_document_terkait AS pdt')
-            ->select(
-                ' 
-                md.nama_document,
-                md.no_document,
-                md.slug AS doc_slug, 
-                dj.slug,
-                d.kode_divisi,
-                dept.nama_dept
-                '
-            )
+            ->select('
+        md.nama_document,
+        md.no_document,
+        md.slug AS doc_slug, 
+        dj.slug AS slug,
+        d.kode_divisi,
+        dept.nama_dept
+    ')
             ->join('my_documents AS md', 'md.id = pdt.id')
             ->join('document_jenis AS dj', 'dj.id = md.jenis_id')
-            ->join('divisis AS d', 'd.id = md.divisi_id')
-            ->join('departments AS dept', 'dept.id = department_id')
+
+            // join hanya kalau divisi_id tidak null
+            ->join(
+                'divisis AS d',
+                'd.id = md.divisi_id AND md.divisi_id IS NOT NULL',
+                'left'
+            )
+
+            // department ikut kalau divisi ada
+            ->join(
+                'departments AS dept',
+                'dept.id = d.department_id',
+                'left'
+            )
+
             ->where('pdt.document_id', $id)
             ->groupBy('pdt.id');
     }
