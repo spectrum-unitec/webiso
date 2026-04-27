@@ -5,6 +5,15 @@ $uri = service('uri');
 $segment2 = $uri->getSegment(2);
 ?>
 
+<?= $this->section('pageStyles'); ?>
+<style>
+    .accordion-body {
+        max-height: 300px;
+        overflow-y: scroll;
+    }
+</style>
+<?= $this->endSection(); ?>
+
 <?= $this->section('content'); ?>
 <div class="row justify-content-center">
     <!-- BEGIN col-10 -->
@@ -175,7 +184,7 @@ $segment2 = $uri->getSegment(2);
                                                                 'home.menus.divisi',
                                                                 url_title($item->nama_dept, '-', true),
                                                                 $item->slug,
-                                                                $item->kode_divisi   
+                                                                $item->kode_divisi
                                                             )) . '?doc=' . $slugDoc;
                                                         } else {
 
