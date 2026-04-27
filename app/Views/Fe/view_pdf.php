@@ -11,6 +11,7 @@ $segment2 = $uri->getSegment(2);
         max-height: 300px;
         overflow-y: scroll;
     }
+
     .active {
         color: #212837;
         font-weight: 600;
@@ -47,52 +48,137 @@ $segment2 = $uri->getSegment(2);
             <!-- BEGIN col-3 -->
             <div class="col-xl-3">
                 <?php if ($segment2 !== 'prosedur-mutu') : ?>
-                    <h5 class="d-flex align-items-end" style="padding: .1875rem 1.5rem; min-height: 107px;">List Dokumen</h5>
-                    <nav id="sidebar-bootstrap" class="navbar navbar-sticky d-none d-xl-block">
-                        <nav class="nav">
+                    <div class="accordion" style="margin-top: 85px;" id="accordionSidebar">
+
+                        <?php
+                        $segments = current_url(true)->getSegments();
+
+                        $segment1 = $segments[0] ?? '';
+                        $segment2 = $segments[1] ?? '';
+                        $segment3 = $segments[2] ?? '';
+
+                        $currentDoc = service('request')->getGet('doc');
+
+                        $jenisSlug = $jenisDoc->slug
+                            ?? $jenisOnly->slug
+                            ?? $nonIso->slug;
+
+                        // 🔥 BASE URL hanya untuk LIST DOC
+                        switch ($segment1) {
+                            case 'manual-mutu':
+                                $baseUrl = base_url(route_to('home.menus', $jenisSlug));
+                                break;
+
+                            case 'document-non-iso':
+                                $baseUrl = base_url(route_to('home.menus.non.iso', $jenisSlug, $segment2));
+                                break;
+
+                            default:
+                                $baseUrl = base_url(route_to('home.menus.divisi', $segment1, $jenisSlug, $segment3));
+                                break;
+                        }
+
+                        $sections = [
+                            'list-doc' => 'List Dokumen',
+                        ];
+                        ?>
+
+                        <?php $i = 0;
+                        foreach ($sections as $id => $title) : ?>
 
                             <?php
-                            $segments = current_url(true)->getSegments();
-
-                            $segment1 = $segments[0] ?? '';
-                            $segment2 = $segments[1] ?? '';
-                            $segment3 = $segments[2] ?? '';
-
-                            $currentDoc = service('request')->getGet('doc');
-
-                            $jenisSlug = $jenisDoc->slug
-                                ?? $jenisOnly->slug
-                                ?? $nonIso->slug;
-
-                            switch ($segment1) {
-                                case 'manual-mutu':
-                                    $baseUrl = base_url(route_to('home.menus', $jenisSlug));
-                                    break;
-
-                                case 'document-non-iso':
-                                    $baseUrl = base_url(route_to('home.menus.non.iso', $jenisSlug, $segment2));
-                                    break;
-
-                                default:
-                                    $baseUrl = base_url(route_to('home.menus.divisi', $segment1, $jenisSlug, $segment3));
-                                    break;
+                            // 🔥 Tentukan data
+                            if ($id === 'list-doc') {
+                                $dataList = $docs ?? [];
+                            } elseif ($id === 'rekaman') {
+                                $dataList = $rekamanMutuList ?? [];
+                            } else {
+                                $dataList = $docTerkaitList ?? [];
                             }
                             ?>
 
-                            <?php foreach ($docs as $doc) : ?>
-                                <?php
-                                $url    = $baseUrl . '?doc=' . $doc->slug;
-                                $active = ($currentDoc === $doc->slug) ? 'active' : '';
-                                ?>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="heading<?= $i ?>">
+                                    <button class="accordion-button <?= $i !== 0 ? 'collapsed' : '' ?>"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#collapse<?= $i ?>">
+                                        <?= $title ?>
+                                    </button>
+                                </h2>
 
-                                <a class="nav-link <?= $active ?>" href="<?= esc($url) ?>">
-                                    <span class="badge bg-primary"><?= esc($doc->no_document); ?></span>
-                                    <?= esc($doc->nama_document) ?>
-                                </a>
-                            <?php endforeach; ?>
+                                <div id="collapse<?= $i ?>"
+                                    class="accordion-collapse collapse <?= $i === 0 ? 'show' : '' ?>"
+                                    data-bs-parent="#accordionSidebar">
 
-                        </nav>
-                    </nav>
+                                    <div class="accordion-body p-2">
+                                        <nav class="nav flex-column">
+
+                                            <?php if (!empty($dataList)) : ?>
+
+
+                                                <?php foreach ($dataList as $item) : ?>
+
+                                                    <?php
+                                                    // 🔥 DETEKSI RELASI (rekaman + terkait)
+                                                    $isRelasi = in_array($id, ['rekaman', 'terkait']);
+
+                                                    // 🔥 ambil slug document
+                                                    $slugDoc = $isRelasi
+                                                        ? ($item->doc_slug ?? $item->slug)
+                                                        : $item->slug;
+
+                                                    $no   = $item->no_document;
+                                                    $nama = $item->nama_document;
+
+                                                    // 🔥 URL LOGIC
+                                                    if ($isRelasi) {
+
+                                                        if (!empty($item->kode_divisi)) {
+
+                                                            $url = base_url(route_to(
+                                                                'home.menus.divisi',
+                                                                url_title($item->nama_dept, '-', true),
+                                                                $item->slug,
+                                                                $item->kode_divisi
+                                                            )) . '?doc=' . $slugDoc;
+                                                        } else {
+
+                                                            $url = base_url(route_to(
+                                                                'home.menus',
+                                                                $item->slug
+                                                            )) . '?doc=' . $slugDoc;
+                                                        }
+                                                    } else {
+
+                                                        $url = $baseUrl . '?doc=' . $slugDoc;
+                                                    }
+
+                                                    $active = ($currentDoc === $slugDoc) ? 'active' : '';
+                                                    ?>
+
+                                                    <a class="nav-link <?= $active ?>" href="<?= esc($url) ?>">
+                                                        <span class="badge bg-primary me-2">
+                                                            <?= esc($no); ?>
+                                                        </span>
+                                                        <?= esc($nama) ?>
+                                                    </a>
+
+                                                <?php endforeach; ?>
+
+                                            <?php else : ?>
+                                                <span class="text-muted small px-2">Tidak ada data</span>
+                                            <?php endif; ?>
+
+                                        </nav>
+                                    </div>
+                                </div>
+                            </div>
+
+                        <?php $i++;
+                        endforeach; ?>
+
+                    </div>
                 <?php else : ?>
                     <div class="accordion" style="margin-top: 85px;" id="accordionSidebar">
 

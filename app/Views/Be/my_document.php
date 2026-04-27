@@ -338,6 +338,46 @@
         const jenisDoc = document.getElementById('jenisDoc');
         const prosedurFields = document.getElementById('prosedurFields');
 
+        // toggle saat modal create document muncul pilihan iso atau non iso
+        //start
+        createModal.addEventListener('shown.bs.modal', function() {
+
+            const tipeDoc = document.getElementById('tipeDoc');
+            const isoFields = document.getElementById('isoFields');
+            const nonIsoFields = document.getElementById('nonIsoFields');
+
+            const subCategory = document.getElementById('subCategory');
+
+            function toggleForm() {
+                if (tipeDoc.value === 'non_iso') {
+
+                    // NON ISO
+                    isoFields.style.display = 'none';
+                    nonIsoFields.style.display = 'block';
+
+                    // reset ISO field
+                    isoFields.querySelectorAll('select').forEach(el => el.value = '');
+
+                } else {
+
+                    // ISO
+                    isoFields.style.display = 'block';
+                    nonIsoFields.style.display = 'none';
+
+                    // reset NON ISO
+                    if (subCategory) subCategory.value = '';
+                }
+            }
+
+            // reset setiap buka modal
+            tipeDoc.value = 'iso';
+            toggleForm();
+
+            // event change
+            tipeDoc.onchange = toggleForm;
+        });
+        //end
+
         // =========================
         // INIT SLIMSELECT (GENERIC)
         // =========================
