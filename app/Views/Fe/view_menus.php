@@ -121,8 +121,9 @@
         let loading = false;
         let finished = false;
 
-        let jenis = "<?= $segment1 ?>";
-        let divisi = "<?= $segment2 ?>";
+        let dept = "<?= $segment1 ?>";
+        let jenis = "<?= $segment2 ?>";
+        let divisi = "<?= $segment3 ?>";
 
         function loadData(reset = false) {
 
@@ -153,6 +154,7 @@
                 dataType: "json",
                 data: {
                     q: query,
+                    dept:dept,
                     jenis: jenis,
                     divisi: divisi,
                     offset: offset
@@ -219,11 +221,11 @@
             clearTimeout(timer);
 
             if (query.length < 2) {
-                resetState(); // ✅ reset total
+                resetState(); // reset total
                 return;
             }
 
-            resetState(); // ✅ reset sebelum search baru
+            resetState(); // reset sebelum search baru
 
             timer = setTimeout(() => loadData(true), 300);
         });

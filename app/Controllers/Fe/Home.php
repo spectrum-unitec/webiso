@@ -3,6 +3,7 @@
 namespace App\Controllers\Fe;
 
 use App\Controllers\BaseController;
+use App\Models\DepartmentModel;
 use App\Models\DivisiModel;
 use App\Models\HistoryDocumentModel;
 use App\Models\JenisDocumentModel;
@@ -15,6 +16,7 @@ class Home extends BaseController
 {
     protected $divisiModel;
     protected $jenisModel;
+    protected $departemenModel;
     protected $docModel;
     protected $historyModel;
     protected $subCategoryNonIsoModel;
@@ -25,6 +27,7 @@ class Home extends BaseController
     {
         $this->divisiModel = new DivisiModel();
         $this->jenisModel = new JenisDocumentModel();
+        $this->departemenModel = new DepartmentModel();
         $this->docModel = new MydocumentModel();
         $this->historyModel = new HistoryDocumentModel();
         $this->subCategoryNonIsoModel = new SubCategoryNonIsoModel();
@@ -282,51 +285,80 @@ class Home extends BaseController
 
     public function searchDoc()
     {
-        $keyword    = $this->request->getGet('q');
+        $keyword    = trim($this->request->getGet('q') ?? '');
         $jenisSlug  = $this->request->getGet('jenis');
         $divisiKode = $this->request->getGet('divisi');
+        $deptSlug   = $this->request->getGet('dept');
         $offset     = (int) ($this->request->getGet('offset') ?? 0);
 
         $limit = 10;
 
-        if (!$keyword) {
+        if ($keyword === '') {
             return $this->response->setJSON([]);
         }
 
-        $builder = $this->docModel;
+        $builder = $this->docModel->builder();
 
+        // =========================
+        // JOIN
+        // =========================
+        $builder->join('divisis', 'divisis.id = my_documents.divisi_id', 'left');
+        $builder->join('departments', 'departments.id = divisis.department_id', 'left');
+
+        // =========================
+        // SEARCH
+        // =========================
         $builder->groupStart()
-            ->like('nama_document', $keyword)
-            ->orLike('no_document', $keyword)
+            ->like('my_documents.nama_document', $keyword)
+            ->orLike('my_documents.no_document', $keyword)
             ->groupEnd();
 
-        // jenis
-        if ($jenisSlug) {
+        // =========================
+        // FILTER JENIS
+        // =========================
+        if (!empty($jenisSlug)) {
             $jenis = $this->jenisModel->where('slug', $jenisSlug)->first();
             if ($jenis) {
-                $builder->where('jenis_id', $jenis->id);
+                $builder->where('my_documents.jenis_id', $jenis->id);
             }
         }
 
-        // divisi
-        if ($divisiKode) {
-            $divisi = $this->divisiModel->where('kode_divisi', $divisiKode)->first();
-            if ($divisi) {
-                $builder->where('divisi_id', $divisi->id);
-            }
+        // =========================
+        // FILTER DIVISI
+        // =========================
+        if (!empty($divisiKode)) {
+            $builder->where('divisis.kode_divisi', $divisiKode);
         }
 
+        // =========================
+        // FILTER DEPARTMENT (tanpa slug)
+        // =========================
+        if (!empty($deptSlug)) {
+            $deptName = ucwords(str_replace('-', ' ', $deptSlug));
+
+            // cocokkan ke nama_department
+            $builder->like('departments.nama_dept', $deptName);
+        }
+
+        // =========================
+        // EXECUTE
+        // =========================
         $docs = $builder
-            ->orderBy('nama_document', 'ASC')
-            ->findAll($limit, $offset);
+            ->select('my_documents.*')
+            ->orderBy('my_documents.nama_document', 'ASC')
+            ->limit($limit, $offset)
+            ->get()
+            ->getResult();
 
         $result = [];
 
         foreach ($docs as $doc) {
 
-            $route = !empty($divisiKode)
-                ? route_to('home.menus.divisi', $jenisSlug, $divisiKode)
-                : route_to('home.menus', $jenisSlug);
+            if (!empty($divisiKode)) {
+                $route = route_to('home.menus.divisi',$deptSlug, $jenisSlug, $divisiKode);
+            } else {
+                $route = route_to('home.menus', $jenisSlug);
+            }
 
             $result[] = [
                 'no_document'   => $doc->no_document,
