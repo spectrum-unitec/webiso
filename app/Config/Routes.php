@@ -24,6 +24,7 @@ $routes->group('administrator', ['namespace' => 'App\Controllers\Be', 'filter' =
         $routes->post('ajax-update', 'MyDocument::ajaxUpdate', ['as' => 'admin.mydocument.update']);
         $routes->delete('ajax-delete/(:num)', 'MyDocument::ajaxDelete/$1', ['as' => 'admin.mydocument.delete']);
         $routes->post('delete-bulk', 'MyDocument::deleteBulk', ['as' => 'admin.mydocument.deleteBulk']);
+        $routes->get('ajax-link-document', 'MyDocument::ajaxGetLinkDoc', ['as' => 'ajax.link.doc']);
     });
 
     $routes->group('master-data', function ($routes) {

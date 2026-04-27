@@ -9,6 +9,8 @@ use App\Models\HistoryDocumentModel;
 use App\Models\JenisDocumentModel;
 use App\Models\LevelDocument;
 use App\Models\MydocumentModel;
+use App\Models\PivotDocumentTerkaitModel;
+use App\Models\PivotRekamanMutuModel;
 use App\Models\SubCategoryNonIsoModel;
 use CodeIgniter\I18n\Time;
 use Hermawan\DataTables\DataTable;
@@ -19,6 +21,8 @@ class MyDocument extends BaseController
     protected $jenisDocModel;
     protected $historyDocModel;
     protected $subCategoryModel;
+    protected $pivotDocRekamanMutuModel;
+    protected $pivotDocTerkaitModel;
 
     public function __construct()
     {
@@ -26,6 +30,8 @@ class MyDocument extends BaseController
         $this->jenisDocModel = new JenisDocumentModel();
         $this->historyDocModel = new HistoryDocumentModel();
         $this->subCategoryModel = new SubCategoryNonIsoModel();
+        $this->pivotDocRekamanMutuModel = new PivotRekamanMutuModel();
+        $this->pivotDocTerkaitModel = new PivotDocumentTerkaitModel();
     }
 
     public function index()
@@ -39,8 +45,7 @@ class MyDocument extends BaseController
         $modelLevelDoc = new LevelDocument();
         $levelDoc = $modelLevelDoc->findAll();
 
-        $modelJenisDoc = new JenisDocumentModel();
-        $jenisDoc = $modelJenisDoc->where('jenis_document !=', 'Document Non Iso')->findAll();
+        $jenisDoc = $this->jenisDocModel->where('jenis_document !=', 'Document Non Iso')->findAll();
 
         $modelDivisi = new DivisiModel();
         $divisi = $modelDivisi->findAll();
@@ -48,7 +53,9 @@ class MyDocument extends BaseController
         $subCategories = $this->subCategoryModel
             ->findAll();
 
-        return view('Be/my_document', compact('bread', 'levelDoc', 'jenisDoc', 'divisi', 'subCategories'));
+        $rekamanMutu = $this->docModel->where('jenis_id', 5)->findAll();
+
+        return view('Be/my_document', compact('bread', 'levelDoc', 'jenisDoc', 'divisi', 'subCategories', 'rekamanMutu'));
     }
 
     public function ajaxStore()
@@ -144,6 +151,45 @@ class MyDocument extends BaseController
         $this->docModel->insert($insertData);
         $documentId = $this->docModel->getInsertID();
 
+        // ================= REKAMAN MUTU =================
+        $rekaman = $this->request->getPost('rekaman_mutu') ?? [];
+        $rekaman = is_array($rekaman) ? $rekaman : [$rekaman];
+
+        // dd($rekaman);
+        if (!empty($rekaman)) {
+
+            $batch = [];
+
+            foreach ($rekaman as $rekamanId) {
+                $batch[] = [
+                    'document_id' => $documentId,
+                    'id'  => $rekamanId 
+                ];
+            }
+
+            $this->pivotDocRekamanMutuModel->insertBatch($batch);
+        }
+
+
+        // ================= DOKUMEN TERKAIT =================
+        $dokumenTerkait = $this->request->getPost('dokumen_terkait') ?? [];
+        $dokumenTerkait = is_array($dokumenTerkait) ? $dokumenTerkait : [$dokumenTerkait];
+
+        if (!empty($dokumenTerkait)) {
+
+            $batch = [];
+
+            foreach ($dokumenTerkait as $terkaitId) {
+                $batch[] = [
+                    'document_id' => $documentId,
+                    'id'  => $terkaitId
+                ];
+            }
+
+            $this->pivotDocTerkaitModel->insertBatch($batch);
+        }
+
+
         // ================= HISTORY =================
         $this->historyDocModel->insert([
             'document_id'   => $documentId,
@@ -204,26 +250,7 @@ class MyDocument extends BaseController
 
     public function ajaxEdit($id)
     {
-        return $this->response->setJSON(
-            $this->docModel->find($id)
-        );
-    }
-
-    public function ajaxUpdate()
-    {
-        if (!$this->request->isAJAX()) {
-            return $this->response
-                ->setStatusCode(403)
-                ->setJSON([
-                    'status' => false,
-                    'message' => 'Forbidden access'
-                ]);
-        }
-
-        $id  = $this->request->getPost('id');
         $doc = $this->docModel->find($id);
-        $jenisId = $this->request->getPost('jenis');
-
 
         if (!$doc) {
             return $this->response->setJSON([
@@ -232,48 +259,108 @@ class MyDocument extends BaseController
             ]);
         }
 
-        // 🔥 DETEKSI TIPE
+        // ======================
+        // REKAMAN MUTU
+        // ======================
+        $rekamanIds = $this->pivotDocRekamanMutuModel
+            ->where('document_id', $id)
+            ->findColumn('id');
+
+        $rekamanDetail = [];
+
+        if (!empty($rekamanIds)) {
+            $rekamanDetail = $this->docModel
+                ->select('id, no_document, nama_document')
+                ->whereIn('id', $rekamanIds)
+                ->findAll();
+        }
+
+        // ======================
+        // DOKUMEN TERKAIT
+        // ======================
+        $terkaitIds = $this->pivotDocTerkaitModel
+            ->where('document_id', $id)
+            ->findColumn('id');
+
+        $terkaitDetail = [];
+
+        if (!empty($terkaitIds)) {
+            $terkaitDetail = $this->docModel
+                ->select('id, no_document, nama_document')
+                ->whereIn('id', $terkaitIds)
+                ->findAll();
+        }
+
+
+        return $this->response->setJSON(
+            [
+                'id' => $doc->id,
+                'data' => $doc,
+                'nama_document' => $doc->nama_document,
+
+                // rekaman mutu
+                'rekaman_mutu'         => $rekamanIds ?? [],
+                'rekaman_mutu_detail'  => $rekamanDetail ?? [],
+
+                // dokumen terkait
+                'dokumen_terkait'        => $terkaitIds ?? [],
+                'dokumen_terkait_detail' => $terkaitDetail ?? []
+            ]
+        );
+    }
+
+    public function ajaxUpdate()
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(403)->setJSON([
+                'status' => false,
+                'message' => 'Forbidden access'
+            ]);
+        }
+
+        $id  = $this->request->getPost('id');
+        $doc = $this->docModel->find($id);
+
+        if (!$doc) {
+            return $this->response->setJSON([
+                'status' => false,
+                'message' => 'Data tidak ditemukan'
+            ]);
+        }
+
+        // ======================
+        // INPUT
+        // ======================
+        $jenisId = $this->request->getPost('jenis');
+        $jenis   = $this->jenisDocModel->find($jenisId);
+
         $isIso = !empty($doc->level_id);
 
-        $isManualMutu = $this->jenisDocModel->find($jenisId);
-
-        // ================= DATA =================
+        // ======================
+        // DATA
+        // ======================
         $data = [
             'no_document'   => $this->request->getPost('no_doc'),
             'nama_document' => $this->request->getPost('nm_doc'),
         ];
 
         if ($isIso) {
-            $data['level_id']  = $this->request->getPost('level');
-            $data['jenis_id']  = $this->request->getPost('jenis');
-            $data['divisi_id'] = $this->request->getPost('divisi');
+            $data['level_id'] = $this->request->getPost('level');
+            $data['jenis_id'] = $jenisId;
 
-            if ($isManualMutu->slug === 'manual-mutu') {
-                $data['divisi_id'] = null;
-            } else {
-                $data['divisi_id'] = $this->request->getPost('divisi');
-            }
+            $data['divisi_id'] = ($jenis && $jenis->slug === 'manual-mutu')
+                ? null
+                : $this->request->getPost('divisi');
         } else {
             $data['level_id']  = null;
             $data['divisi_id'] = null;
-            $data['jenis_id']  = $doc->jenis_id; // ✅ FIX
+            $data['jenis_id']  = $doc->jenis_id;
         }
 
-        // ================= FILE =================
+        // ======================
+        // FILE
+        // ======================
         $file = $this->request->getFile('pdf_file');
-
-        // 🔥 DEBUG 1: cek file masuk atau tidak
-        // if (!$file) {
-        //     dd('FILE NULL');
-        // }
-
-        // 🔥 DEBUG 2: info dasar file
-        // var_dump([
-        //     'name'  => $file->getName(),
-        //     'size'  => $file->getSize(),
-        //     'error' => $file->getError(),
-        // ]);
-        // die;
 
         if ($file && $file->isValid() && !$file->hasMoved()) {
 
@@ -284,8 +371,8 @@ class MyDocument extends BaseController
                 ]);
             }
 
-
             $path = WRITEPATH . 'uploads/pdf';
+
             if (!is_dir($path)) {
                 mkdir($path, 0777, true);
             }
@@ -295,21 +382,64 @@ class MyDocument extends BaseController
 
             $data['file'] = $newName;
 
-            // hapus file lama
             if (!empty($doc->file) && file_exists($path . '/' . $doc->file)) {
                 unlink($path . '/' . $doc->file);
             }
         }
 
-        // ================= CEK PERUBAHAN =================
+        // ======================
+        // CEK PERUBAHAN FIELD
+        // ======================
         $isChanged = false;
+
         foreach ($data as $key => $value) {
-            if ($doc->$key != $value) { // ✅ FIX
+            if ((string)$doc->$key !== (string)$value) {
                 $isChanged = true;
                 break;
             }
         }
 
+        // ======================
+        // REKAMAN MUTU
+        // ======================
+        $rekaman = $this->request->getPost('rekaman_mutu') ?? [];
+        $rekaman = is_array($rekaman) ? $rekaman : [$rekaman];
+
+        $oldRekaman = $this->pivotDocRekamanMutuModel
+            ->where('document_id', $id)
+            ->findAll();
+
+        $oldRekamanIds = array_column($oldRekaman, 'id');
+
+        sort($rekaman);
+        sort($oldRekamanIds);
+
+        if ($rekaman !== $oldRekamanIds) {
+            $isChanged = true;
+        }
+
+        // ======================
+        // DOKUMEN TERKAIT
+        // ======================
+        $terkait = $this->request->getPost('dokumen_terkait') ?? [];
+        $terkait = is_array($terkait) ? $terkait : [$terkait];
+
+        $oldTerkait = $this->pivotDocTerkaitModel
+            ->where('document_id', $id)
+            ->findAll();
+
+        $oldTerkaitIds = array_column($oldTerkait, 'id');
+
+        sort($terkait);
+        sort($oldTerkaitIds);
+
+        if ($terkait !== $oldTerkaitIds) {
+            $isChanged = true;
+        }
+
+        // ======================
+        // STOP
+        // ======================
         if (!$isChanged) {
             return $this->response->setJSON([
                 'status' => false,
@@ -317,14 +447,46 @@ class MyDocument extends BaseController
             ]);
         }
 
-        // ================= UPDATE =================
+        // ======================
+        // UPDATE
+        // ======================
         $this->docModel->update($id, $data);
 
-        // ================= HISTORY =================
+        // ======================
+        // SYNC REKAMAN
+        // ======================
+        $this->pivotDocRekamanMutuModel
+            ->where('document_id', $id)
+            ->delete();
+
+        foreach ($rekaman as $rekamanId) {
+            $this->pivotDocRekamanMutuModel->insert([
+                'document_id' => $id,
+                'id'  => $rekamanId
+            ]);
+        }
+
+        // ======================
+        // SYNC TERKAIT
+        // ======================
+        $this->pivotDocTerkaitModel
+            ->where('document_id', $id)
+            ->delete();
+
+        foreach ($terkait as $terkaitId) {
+            $this->pivotDocTerkaitModel->insert([
+                'document_id' => $id,
+                'id'  => $terkaitId
+            ]);
+        }
+
+        // ======================
+        // HISTORY
+        // ======================
         $this->historyDocModel->insert([
-            'document_id' => $id,
-            'action' => 'update',
-            'no_document' => $data['no_document'],
+            'document_id'   => $id,
+            'action'        => 'update',
+            'no_document'   => $data['no_document'],
             'nama_document' => $data['nama_document'],
         ]);
 
@@ -363,6 +525,50 @@ class MyDocument extends BaseController
 
         return $this->response->setJSON([
             'status' => true
+        ]);
+    }
+
+    public function ajaxGetLinkDoc()
+    {
+
+        $search = $this->request->getGet('search');
+
+
+        $limit  = (int) ($this->request->getGet('limit') ?? 20);
+        $skip   = (int) ($this->request->getGet('skip') ?? 0);
+
+        $builder = $this->docModel;
+
+        // SEARCH ke nama_document + no_document
+        if ($search) {
+            $builder = $builder->groupStart()
+                ->like('nama_document', $search)
+                ->orLike('no_document', $search)
+                ->groupEnd();
+        }
+
+        // total (pakai clone biar aman)
+        $total = $builder->countAllResults(false);
+
+        // ambil data
+        $data = $builder
+            ->select('id, no_document, nama_document')
+            ->orderBy('created_at', 'DESC')
+            ->findAll($limit, $skip);
+
+        // format untuk SlimSelect
+        $results = array_map(function ($row) {
+            return [
+                'id'   => $row->id,
+                'namaDoc' => $row->no_document . ' - ' . $row->nama_document
+            ];
+        }, $data);
+
+        return $this->response->setJSON([
+            'results' => $results,
+            'total'   => $total,
+            'skip'    => $skip,
+            'limit'   => $limit
         ]);
     }
 

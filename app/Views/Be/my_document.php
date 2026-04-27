@@ -1,6 +1,9 @@
 <?= $this->extend('Be/layouts/main'); ?>
 
 <?= $this->section('pageStyles'); ?>
+<script src="https://unpkg.com/slim-select@latest/dist/slimselect.js"></script>
+<link href="https://unpkg.com/slim-select@latest/dist/slimselect.css" rel="stylesheet">
+</link>
 <link rel="stylesheet"
     href="https://cdn.datatables.net/2.3.5/css/dataTables.bootstrap5.min.css">
 <?= $this->endSection(); ?>
@@ -48,7 +51,7 @@
 </div>
 
 <!-- Modal create document -->
-<div class="modal fade" id="createDocument" tabindex="-1">
+<div class="modal fade" id="createDocument" tabindex="-1" data-bs-focus="false">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -59,7 +62,7 @@
             <form id="formCreateDocument" enctype="multipart/form-data">
                 <div class="modal-body">
 
-                    <!-- ✅ TOGGLE -->
+                    <!-- TOGGLE -->
                     <div class="mb-3">
                         <label class="form-label">Tipe Dokumen</label>
                         <select id="tipeDoc" name="tipe" class="form-select">
@@ -73,7 +76,7 @@
                         <div class="mb-3">
                             <label class="form-label">Sub Kategori</label>
                             <select name="sub" id="subCategory" class="form-select">
-                                <option value="">Pilih Kategori</option>
+                                <option value="">Pilih kategori</option>
                                 <?php foreach ($subCategories as $row) : ?>
                                     <option value="<?= $row->id; ?>">
                                         <?= $row->nama; ?>
@@ -103,7 +106,7 @@
                         <div class="mb-3">
                             <label class="form-label">Level Dokumen ISO</label>
                             <select name="level" class="form-select">
-                                <option value="">Pilih Level Dokumen</option>
+                                <option value="">Pilih level dokumen</option>
                                 <?php foreach ($levelDoc as $row) : ?>
                                     <option value="<?= $row->id; ?>"><?= $row->level; ?></option>
                                 <?php endforeach; ?>
@@ -113,7 +116,7 @@
                         <div class="mb-3">
                             <label class="form-label">Jenis Dokumen</label>
                             <select name="jenis" id="jenisDoc" class="form-select">
-                                <option value="">Pilih Jenis Dokumen</option>
+                                <option value="">Pilih jenis dokumen</option>
                                 <?php foreach ($jenisDoc as $row) : ?>
                                     <option value="<?= $row->id; ?>">
                                         <?= $row->jenis_document; ?>
@@ -125,13 +128,33 @@
                         <div class="mb-3">
                             <label class="form-label">Kode Bagian</label>
                             <select name="divisi" id="divisi" class="form-select">
-                                <option value="">Pilih Kode Bagian</option>
+                                <option value="">Pilih kode bagian</option>
                                 <?php foreach ($divisi as $row) : ?>
                                     <option value="<?= $row->id; ?>">
                                         [<?= $row->kode_divisi; ?>] <?= $row->nama_divisi; ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
+                        </div>
+
+                        <div id="prosedurFields" style="display:none;">
+
+                            <!-- REKAMAN MUTU -->
+                            <div class="mb-3">
+                                <label class="form-label">Link Rekaman Mutu</label>
+                                <select id="rekaman_mutu" name="rekaman_mutu[]" multiple>
+
+                                </select>
+                            </div>
+
+                            <!-- DOKUMEN TERKAIT -->
+                            <div class="mb-3">
+                                <label class="form-label">Dokumen Terkait</label>
+                                <select name="dokumen_terkait[]" id="dokumen_terkait" multiple>
+
+                                </select>
+                            </div>
+
                         </div>
 
                     </div>
@@ -159,9 +182,10 @@
 
 
 <!-- Modal edit document -->
-<div class="modal fade" id="editDocument" tabindex="-1">
+<div class="modal fade" id="editDocument" tabindex="-1" data-bs-focus="false">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
+
             <div class="modal-header">
                 <h5 class="modal-title">Edit Dokumen</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -170,13 +194,7 @@
             <form id="formEditDocument" enctype="multipart/form-data">
                 <input type="hidden" name="id" id="edit_id">
 
-
                 <div class="modal-body">
-
-                    <!-- <select ty id="edit_tipeDoc" name="tipe" class="form-select" aria-readonly="true">
-                        <option value="iso">ISO</option>
-                        <option value="non_iso">Non ISO</option>
-                    </select> -->
 
                     <!-- NO -->
                     <div class="mb-3">
@@ -190,13 +208,13 @@
                         <input type="text" name="nm_doc" id="edit_nm_doc" class="form-control">
                     </div>
 
-                    <!-- ✅ ISO FIELDS -->
+                    <!-- ================= ISO ================= -->
                     <div id="editIsoFields">
 
                         <div class="mb-3">
                             <label class="form-label">Level Dokumen ISO</label>
                             <select name="level" id="edit_level" class="form-select">
-                                <option value="">Pilih Level Dokumen</option>
+                                <option value="">Pilih level dokumen</option>
                                 <?php foreach ($levelDoc as $row) : ?>
                                     <option value="<?= $row->id; ?>"><?= $row->level; ?></option>
                                 <?php endforeach; ?>
@@ -206,7 +224,7 @@
                         <div class="mb-3">
                             <label class="form-label">Jenis Dokumen</label>
                             <select name="jenis" id="edit_jenis" class="form-select">
-                                <option value="">Pilih Jenis Dokumen</option>
+                                <option value="">Pilih jenis dokumen</option>
                                 <?php foreach ($jenisDoc as $row) : ?>
                                     <option value="<?= $row->id; ?>">
                                         <?= $row->jenis_document; ?>
@@ -218,7 +236,7 @@
                         <div class="mb-3">
                             <label class="form-label">Kode Bagian</label>
                             <select name="divisi" id="edit_divisi" class="form-select">
-                                <option value="">Pilih Kode Bagian</option>
+                                <option value="">Pilih kode bagian</option>
                                 <?php foreach ($divisi as $row) : ?>
                                     <option value="<?= $row->id; ?>">
                                         [<?= $row->kode_divisi; ?>] <?= $row->nama_divisi; ?>
@@ -229,11 +247,48 @@
 
                     </div>
 
-                    <!-- FILE (UNTUK SEMUA) -->
+                    <!-- ================= NON ISO ================= -->
+                    <div id="editNonIsoFields" style="display:none;">
+
+                        <div class="mb-3">
+                            <label class="form-label">Kategori Non ISO</label>
+                            <select name="sub_category" id="edit_subCategory" class="form-select">
+                                <option value="">Pilih kategori</option>
+                                <?php foreach ($subCategories as $row) : ?>
+                                    <option value="<?= $row->id; ?>">
+                                        <?= $row->nama; ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <!-- ================= PROSEDUR MUTU ================= -->
+                    <div id="editProsedurFields" style="display:none;">
+
+                        <!-- REKAMAN MUTU -->
+                        <div class="mb-3">
+                            <label class="form-label">Link Rekaman Mutu</label>
+                            <select id="edit_rekaman_mutu" name="rekaman_mutu[]" multiple>
+
+                            </select>
+                        </div>
+
+                        <!-- Dokumen Terkait -->
+                        <div class="mb-3">
+                            <label class="form-label">Dokumen Terkait</label>
+                            <select name="dokumen_terkait[]" id="edit_dokumen_terkait" multiple>
+
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <!-- FILE -->
                     <div class="mb-3">
                         <label class="form-label">Upload file PDF</label>
                         <input type="file" name="pdf_file" id="edit_pdf" accept="application/pdf" class="form-control">
-                        <small id="currentFile"></small>
                     </div>
 
                     <div class="mb-3">
@@ -247,6 +302,7 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                     <button type="submit" class="btn btn-primary">Simpan</button>
                 </div>
+
             </form>
         </div>
     </div>
@@ -262,44 +318,147 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
 
-        const modal = document.getElementById('createDocument');
+        // =========================
+        // GLOBAL STATE (1 SUMBER)
+        // =========================
+        if (!window.slims) {
+            window.slims = {
+                createRekaman: null,
+                createTerkait: null,
+                editRekaman: null,
+                editTerkait: null
+            };
+        }
 
-        modal.addEventListener('shown.bs.modal', function() {
+        const slims = window.slims;
 
-            const tipeDoc = document.getElementById('tipeDoc');
-            const isoFields = document.getElementById('isoFields');
-            const nonIsoFields = document.getElementById('nonIsoFields');
+        const createModal = document.getElementById('createDocument');
+        const editModal = document.getElementById('editDocument');
 
-            const subCategory = document.getElementById('subCategory');
+        const jenisDoc = document.getElementById('jenisDoc');
+        const prosedurFields = document.getElementById('prosedurFields');
 
-            function toggleForm() {
-                if (tipeDoc.value === 'non_iso') {
+        // =========================
+        // INIT SLIMSELECT (GENERIC)
+        // =========================
+        function initSlim(selector, instance) {
 
-                    // NON ISO
-                    isoFields.style.display = 'none';
-                    nonIsoFields.style.display = 'block';
+            if (instance) instance.destroy();
 
-                    // reset ISO field
-                    isoFields.querySelectorAll('select').forEach(el => el.value = '');
+            return new SlimSelect({
+                select: selector,
+                settings: {
+                    placeholderText: 'Pilih dokumen',
+                    searchPlaceholder: 'Cari dokumen...',
+                    closeOnSelect: false,
+                    allowDeselect: true
+                },
+                events: {
+                    search: async (search, currentData) => {
 
-                } else {
+                        if (search.length < 2) {
+                            return Promise.reject('Minimal 2 karakter');
+                        }
 
-                    // ISO
-                    isoFields.style.display = 'block';
-                    nonIsoFields.style.display = 'none';
+                        const url = "<?= base_url(route_to('ajax.link.doc')) ?>?search=" + search;
+                        const res = await fetch(url);
+                        const json = await res.json();
+                        const data = json?.results || [];
 
-                    // reset NON ISO
-                    if (subCategory) subCategory.value = '';
+                        return [{
+                            label: 'Hasil',
+                            options: data
+                                .filter(d => !currentData.some(c => String(c.value) === String(d.id)))
+                                .map(d => ({
+                                    text: d.namaDoc,
+                                    value: String(d.id)
+                                }))
+                        }];
+                    }
                 }
+            });
+        }
+
+        // =========================
+        // CREATE - TOGGLE PROSEDUR
+        // =========================
+        function toggleProsedurCreate() {
+
+            if (!jenisDoc) return;
+
+            const text = jenisDoc.options[jenisDoc.selectedIndex]?.text || '';
+            const isProsedur = text.toLowerCase().includes('prosedur mutu');
+
+            prosedurFields.style.display = isProsedur ? 'block' : 'none';
+
+            if (isProsedur) {
+                // 🔥 INIT SEKALI DI SINI (AMAN)
+                slims.createRekaman = initSlim('#rekaman_mutu', slims.createRekaman);
+                slims.createTerkait = initSlim('#dokumen_terkait', slims.createTerkait);
+            } else {
+                if (slims.createRekaman) slims.createRekaman.setSelected([]);
+                if (slims.createTerkait) slims.createTerkait.setSelected([]);
             }
+        }
 
-            // reset setiap buka modal
-            tipeDoc.value = 'iso';
-            toggleForm();
+        if (jenisDoc) {
+            jenisDoc.addEventListener('change', toggleProsedurCreate);
+        }
 
-            // event change
-            tipeDoc.onchange = toggleForm;
-        });
+        // =========================
+        // RESET CREATE MODAL
+        // =========================
+        if (createModal) {
+            createModal.addEventListener('show.bs.modal', function() {
+
+                prosedurFields.style.display = 'none';
+
+                if (slims.createRekaman) slims.createRekaman.setSelected([]);
+                if (slims.createTerkait) slims.createTerkait.setSelected([]);
+            });
+        }
+
+        // =========================
+        // EDIT SECTION
+        // =========================
+        let currentEditData = null;
+
+        function loadSlim(instance, dataList) {
+            if (!instance || !dataList) return;
+
+            instance.setData(
+                dataList.map(item => ({
+                    text: `${item.no_document} - ${item.nama_document}`,
+                    value: String(item.id),
+                    selected: true
+                }))
+            );
+        }
+
+        if (editModal) {
+            editModal.addEventListener('shown.bs.modal', function() {
+
+                slims.editRekaman = initSlim('#edit_rekaman_mutu', slims.editRekaman);
+                slims.editTerkait = initSlim('#edit_dokumen_terkait', slims.editTerkait);
+
+                if (currentEditData) {
+                    loadSlim(slims.editRekaman, currentEditData.rekaman_mutu_detail);
+                    loadSlim(slims.editTerkait, currentEditData.dokumen_terkait_detail);
+                }
+            });
+        }
+
+        // =========================
+        // SET DATA EDIT
+        // =========================
+        window.setEditData = function(data) {
+            currentEditData = data;
+
+            if (editModal && editModal.classList.contains('show')) {
+                loadSlim(slims.editRekaman, data.rekaman_mutu_detail);
+                loadSlim(slims.editTerkait, data.dokumen_terkait_detail);
+            }
+        };
 
     });
 </script>
@@ -399,41 +558,70 @@
         //created form
         const formCreate = document.getElementById('formCreateDocument');
 
-        formCreate.onsubmit = async function(e) {
+        formCreate.addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            const form = e.target;
-            const formData = new FormData(form);
+            const formData = new FormData(this);
 
             const tipeDoc = document.getElementById('tipeDoc');
-            const isoFields = document.getElementById('isoFields');
-            const nonIsoFields = document.getElementById('nonIsoFields');
             const subCategory = document.getElementById('subCategory');
             const fileInput = document.getElementById('pdfFile');
 
-            // 🔥 HANDLE ISO / NON ISO
+            // ======================
+            // ISO / NON ISO
+            // ======================
             if (tipeDoc.value === 'non_iso') {
-                formData.set('tipe', 'non_iso');
 
-                // hapus field ISO
+                formData.set('tipe', 'non_iso');
                 formData.delete('level');
                 formData.delete('jenis');
                 formData.delete('divisi');
 
-                // pastikan sub kategori ada
                 formData.set('sub_category', subCategory.value);
-            } else {
-                formData.set('tipe', 'iso');
 
-                // hapus sub kategori
+            } else {
+
+                formData.set('tipe', 'iso');
                 formData.delete('sub_category');
+            }
+
+            // ======================
+            // SYNC SLIMSELECT → FORM DATA
+            // ======================
+            if (window.slims?.createRekaman) {
+
+                const rekaman = slims.createRekaman.getSelected();
+
+                formData.delete('rekaman_mutu[]');
+
+                rekaman.forEach(val => {
+                    formData.append('rekaman_mutu[]', val);
+                });
+            }
+
+            if (window.slims?.createTerkait) {
+
+                const terkait = slims.createTerkait.getSelected();
+
+                formData.delete('dokumen_terkait[]');
+
+                terkait.forEach(val => {
+                    formData.append('dokumen_terkait[]', val);
+                });
+            }
+
+            // ======================
+            // DEBUG DI SINI
+            // ======================
+            for (let pair of formData.entries()) {
+                console.log(pair[0], pair[1]);
             }
 
             try {
                 const res = await fetch('<?= base_url(route_to('admin.mydocument.store')) ?>', {
                     method: 'POST',
                     headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-Requested-With': 'XMLHttpRequest'
                     },
                     body: formData
                 });
@@ -442,38 +630,45 @@
 
                 if (data.status) {
 
-                    // 🔥 RESET FORM
-                    form.reset();
-
-                    // reset file input (biar bersih total)
+                    // ======================
+                    // RESET FORM
+                    // ======================
+                    this.reset();
                     fileInput.value = '';
 
-                    // reset UI
-                    tipeDoc.value = 'iso';
-                    isoFields.style.display = 'block';
-                    nonIsoFields.style.display = 'none';
+                    // RESET SLIMSELECT
+                    if (window.slims?.createRekaman) {
+                        slims.createRekaman.setSelected([]);
+                    }
+                    if (window.slims?.createTerkait) {
+                        slims.createTerkait.setSelected([]);
+                    }
 
-                    if (subCategory) subCategory.value = '';
+                    // ======================
+                    // RESET UI
+                    // ======================
+                    document.getElementById('tipeDoc').value = 'iso';
+                    document.getElementById('isoFields').style.display = 'block';
+                    document.getElementById('nonIsoFields').style.display = 'none';
 
-                    // 🔥 TUTUP MODAL (PALING STABIL)
-                    const modalEl = document.getElementById('createDocument');
-                    const modal = bootstrap.Modal.getInstance(modalEl);
-                    if (modal) modal.hide();
+                    // ======================
+                    // TUTUP MODAL (BENAR)
+                    // ======================
+                    const modal = bootstrap.Modal.getOrCreateInstance(
+                        document.getElementById('createDocument')
+                    );
+                    modal.hide();
 
-                    // fallback kalau instance null
-                    modalEl.classList.remove('show');
-                    modalEl.style.display = 'none';
-                    document.body.classList.remove('modal-open');
-                    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-
-                    // reload table
-                    table.ajax.reload(false);
+                    // ======================
+                    // RELOAD TABLE
+                    // ======================
+                    table.ajax.reload(null, false);
                 }
 
             } catch (error) {
                 console.error(error);
             }
-        };
+        });
 
         //event delegation
         document.querySelector('#datatableDefault')
@@ -488,63 +683,74 @@
                         const baseEditUrl = "<?= site_url('administrator/mydocument/ajax-edit') ?>";
                         const res = await fetch(`${baseEditUrl}/${id}`);
 
-                        if (!res.ok) {
-                            throw new Error('Response tidak OK');
-                        }
+                        if (!res.ok) throw new Error('Response tidak OK');
 
-                        const data = await res.json();
+                        const resData = await res.json();
+
+                        const data = {
+                            ...resData.data,
+                            rekaman_mutu: resData.rekaman_mutu,
+                            rekaman_mutu_detail: resData.rekaman_mutu_detail,
+                            dokumen_terkait: resData.dokumen_terkait,
+                            dokumen_terkait_detail: resData.dokumen_terkait_detail
+                        };
 
                         // ======================
-                        // SET BASIC DATA
+                        // BASIC DATA
                         // ======================
                         document.getElementById('edit_id').value = data.id ?? '';
                         document.getElementById('edit_no_doc').value = data.no_document ?? '';
                         document.getElementById('edit_nm_doc').value = data.nama_document ?? '';
 
                         const isoFields = document.getElementById('editIsoFields');
+                        const nonIsoFields = document.getElementById('editNonIsoFields');
+                        const prosedurFields = document.getElementById('editProsedurFields');
+
                         const editLevel = document.getElementById('edit_level');
                         const editJenis = document.getElementById('edit_jenis');
                         const editDivisi = document.getElementById('edit_divisi');
-                        const tipeDoc = document.getElementById('edit_tipeDoc');
+                        const subCategory = document.getElementById('edit_subCategory');
 
                         // ======================
-                        // DETECT ISO / NON ISO (lebih aman)
+                        // DETECT ISO / NON ISO
                         // ======================
                         const isIso = data.level_id !== null && data.level_id !== '';
 
                         // ======================
-                        // SET HIDDEN TIPE
+                        // TOGGLE ISO / NON ISO
                         // ======================
-                        if (tipeDoc) {
-                            tipeDoc.value = isIso ? 'iso' : 'non_iso';
-                        }
+                        if (isoFields) isoFields.style.display = isIso ? 'block' : 'none';
+                        if (nonIsoFields) nonIsoFields.style.display = isIso ? 'none' : 'block';
 
                         // ======================
-                        // TOGGLE ISO FIELD
-                        // ======================
-                        if (isoFields) {
-                            isoFields.style.display = isIso ? 'block' : 'none';
-                        }
-
-                        // ======================
-                        // SET VALUE ISO FIELD
+                        // SET VALUE
                         // ======================
                         if (isIso) {
                             if (editLevel) editLevel.value = data.level_id ?? '';
                             if (editJenis) editJenis.value = data.jenis_id ?? '';
                             if (editDivisi) editDivisi.value = data.divisi_id ?? '';
+                            if (subCategory) subCategory.value = '';
                         } else {
                             if (editLevel) editLevel.value = '';
                             if (editJenis) editJenis.value = '';
                             if (editDivisi) editDivisi.value = '';
+                            if (subCategory) subCategory.value = data.sub_category_id ?? '';
                         }
 
                         // ======================
-                        // HANDLE JENIS (Manual Mutu)
+                        // DETECT PROSEDUR MUTU
                         // ======================
-                        if (typeof handleJenisChange === 'function') {
-                            handleJenisChange();
+                        let isProsedur = false;
+
+                        if (editJenis && editJenis.options.length) {
+                            const selectedText = editJenis.options[editJenis.selectedIndex]?.text || '';
+                            isProsedur = selectedText.toLowerCase().includes('prosedur mutu');
                         }
+
+                        if (prosedurFields) {
+                            prosedurFields.style.display = isProsedur ? 'block' : 'none';
+                        }
+
 
                         // ======================
                         // RESET FILE INPUT
@@ -553,7 +759,7 @@
                         if (fileInput) fileInput.value = '';
 
                         // ======================
-                        // PDF VIEWER (ANTI CACHE)
+                        // PDF VIEWER
                         // ======================
                         const pdfViewer = document.getElementById('pdfViewer');
                         if (pdfViewer) {
@@ -563,9 +769,16 @@
                         }
 
                         // ======================
+                        // SET DATA KE SLIMSELECT
+                        // ======================
+                        setEditData(data);
+
+                        // ======================
                         // SHOW MODAL
                         // ======================
-                        new bootstrap.Modal('#editDocument').show();
+                        const modalEl = document.getElementById('editDocument');
+                        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                        modal.show();
 
                     } catch (error) {
                         console.error('Gagal load data:', error);
@@ -735,4 +948,5 @@
         }
     }
 </script>
+
 <?= $this->endSection(); ?>

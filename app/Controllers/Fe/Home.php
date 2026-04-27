@@ -7,6 +7,8 @@ use App\Models\DivisiModel;
 use App\Models\HistoryDocumentModel;
 use App\Models\JenisDocumentModel;
 use App\Models\MydocumentModel;
+use App\Models\PivotDocumentTerkaitModel;
+use App\Models\PivotRekamanMutuModel;
 use App\Models\SubCategoryNonIsoModel;
 
 class Home extends BaseController
@@ -16,6 +18,8 @@ class Home extends BaseController
     protected $docModel;
     protected $historyModel;
     protected $subCategoryNonIsoModel;
+    protected $pivotDocRekamanMutuModel;
+    protected $pivotDocTerkaitModel;
 
     public function __construct()
     {
@@ -24,6 +28,8 @@ class Home extends BaseController
         $this->docModel = new MydocumentModel();
         $this->historyModel = new HistoryDocumentModel();
         $this->subCategoryNonIsoModel = new SubCategoryNonIsoModel();
+        $this->pivotDocRekamanMutuModel = new PivotRekamanMutuModel();
+        $this->pivotDocTerkaitModel = new PivotDocumentTerkaitModel();
     }
 
     public function index()
@@ -61,6 +67,11 @@ class Home extends BaseController
 
             $doc = $docQuery->first();
 
+            $rekamanMutuList = $this->pivotDocRekamanMutuModel->getJoinData($doc->id)->findAll();
+            $docTerkaitList = $this->pivotDocTerkaitModel->getJoinData($doc->id)->findAll();
+
+            // dd($rekamanMutuList);
+
             return view('Fe/view_pdf', [
                 'navs' => $navs,
                 'docs' => $docs,
@@ -69,6 +80,8 @@ class Home extends BaseController
                 'segment1' => $segment1,
                 'segment2' => $segment2,
                 'segment3' => $segment3,
+                'rekamanMutuList' => $rekamanMutuList,
+                'docTerkaitList' => $docTerkaitList,
                 'countDocs' => $this->getCountDoc(),
                 ...$this->getHistoryDoc(),
                 ...$jenisData
