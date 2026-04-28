@@ -162,7 +162,7 @@ $segment2 = $uri->getSegment(2);
                                                     ?>
 
                                                     <a class="nav-link <?= $active ?>" href="<?= esc($url) ?>">
-                                                        <span class="badge bg-primary me-2">
+                                                        <span class="badge bg-primary">
                                                             <?= esc($no); ?>
                                                         </span>
                                                         <?= esc($nama) ?>
@@ -299,7 +299,7 @@ $segment2 = $uri->getSegment(2);
                                                     ?>
 
                                                     <a class="nav-link <?= $active ?>" href="<?= esc($url) ?>">
-                                                        <span class="badge bg-primary me-2">
+                                                        <span class="badge bg-primary">
                                                             <?= esc($no); ?>
                                                         </span>
                                                         <?= esc($nama) ?>
