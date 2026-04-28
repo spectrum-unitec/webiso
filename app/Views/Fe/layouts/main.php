@@ -26,17 +26,16 @@
         /* tampilkan submenu kanan (divisi → jenis) */
         .menu-submenu .menu-item:hover>.submenu-right {
             display: block;
-            position: relative;
         }
 
         /* posisi ke kanan */
         .submenu-right {
-            position: relative;
+            position: absolute;
             top: 0;
-            /* left: 100% !important; */
+            left: 100% !important;
             min-width: 1200px;
             background: #2c3e50;
-            /* z-index: 9999; */
+            z-index: 9999;
         }
     </style>
      <?= $this->renderSection('pageStyles'); ?>
