@@ -241,8 +241,8 @@ $segment2 = $uri->getSegment(2);
                                 <h2 class="accordion-header" id="heading<?= $i ?>">
                                     <button class="accordion-button 
                                         <?= $i !== 0 ? 'collapsed' : '' ?> 
-                                        <?= $id === 'rekaman' ? 'bg-purple text-white' : '' ?>
-                                        <?= $id === 'terkait' ? 'bg-indigo text-white' : '' ?>"
+                                        <?= $id === 'rekaman' ? 'bg-primary text-white' : '' ?>
+                                        <?= $id === 'terkait' ? 'bg-primary text-white' : '' ?>"
                                         type="button"
                                         data-bs-toggle="collapse"
                                         data-bs-target="#collapse<?= $i ?>">
