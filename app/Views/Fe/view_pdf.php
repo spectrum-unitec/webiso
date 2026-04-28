@@ -31,7 +31,7 @@ $segment2 = $uri->getSegment(2);
                     <h1 class="page-header">
                         #<?= $doc->no_document; ?> <small><?= $doc->nama_document; ?></small>
                     </h1>
-    
+
                     <a href="<?= previous_url() ?>" class="btn btn-outline-danger">
                         <i class="bi bi-arrow-left"></i> Kembali
                     </a>
@@ -42,9 +42,7 @@ $segment2 = $uri->getSegment(2);
                 <div id="pdfWrapper">
                     <iframe
                         src="<?= base_url('pdfjs/web/viewer.html') ?>?file=<?= base_url(route_to('pdf', $doc->id)) ?>"
-                        width="100%"
-                        height="600"
-                        style="border:none">
+                        style="width:100%; height:calc(100vh - 120px); border:none;">
                     </iframe>
                 </div>
 
