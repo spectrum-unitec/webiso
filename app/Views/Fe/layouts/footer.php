@@ -17,10 +17,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<!-- <script>
+<script>
     $(document).ready(function() {
 
-        $('#formCreateDocument').on('submit', function(e) {
+        $('#formReqDocument').on('submit', function(e) {
             e.preventDefault();
 
             let form = this;
@@ -67,7 +67,7 @@
                                 });
 
                                 // reset form
-                                $('#formCreateDocument')[0].reset();
+                                $('#formReqDocument')[0].reset();
 
                                 // close modal
                                 $('#createDocument').modal('hide');
@@ -103,4 +103,4 @@
         });
 
     });
-</script> -->
+</script>

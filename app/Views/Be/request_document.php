@@ -68,8 +68,9 @@
                     <div class="mb-3">
                         <label class="form-label">Status</label>
                         <select name="status" class="form-control">
+                            <option value="">--- Pilih ---</option>
                             <option value="approved">Approve</option>
-                            <option value="rejected">Reject</option>
+                            <option value="reject">Reject</option>
                         </select>
                     </div>
 
@@ -160,17 +161,28 @@
                     data: 'jenis_pengajuan'
                 },
                 {
-                    data: 'status'
+                    data: 'status_badge'
                 },
                 {
                     data: 'action',
                     orderable: false,
                     searchable: false,
                     className: 'dt-nowrap text-center',
-                    render: id => `
-                    <button class="btn btn-sm btn-primary btn-konfirm" data-id="${id}">Konfirmasi</button>
-                    <button class="btn btn-sm btn-danger btn-delete" data-id="${id}">Delete</button>
-                `
+                    render: (data, type, row) => {
+                        if (row.status === 'pratinjau') {
+                            return `
+                            <button class="btn btn-sm btn-primary btn-konfirm" data-id="${data}">
+                                Konfirmasi
+                            </button>
+                        `;
+                        } else {
+                            return `
+                                <button class="btn btn-sm btn-danger btn-hapus" data-id="${data}">
+                                    Hapus
+                                </button>
+                            `;
+                        }
+                    }
                 }
             ]
         });
@@ -205,6 +217,56 @@
 
             error: function() {
                 alert('Gagal mengambil data');
+            }
+        });
+    });
+
+    $(document).on('click', '.btn-hapus', function() {
+        let id = $(this).data('id');
+
+        if (!confirm('Yakin ingin menghapus data ini?')) return;
+
+        $.ajax({
+            url: "<?= base_url(route_to('admin.req_doc.delete')); ?>",
+            type: "POST",
+            data: {
+                id: id
+            },
+            dataType: "json",
+            success: function(res) {
+                if (res.status) {
+                    alert(res.message);
+
+                    // reload DataTable tanpa reset paging
+                    $('#datatableDefault').DataTable().ajax.reload(null, false);
+                } else {
+                    alert(res.message);
+                }
+            },
+            error: function() {
+                alert('Gagal menghapus data');
+            }
+        });
+    });
+</script>
+
+<script>
+    $('#formKonfirmasi').on('submit', function(e) {
+        e.preventDefault(); // mencegah reload
+
+        let formData = $(this).serialize();
+
+        $.ajax({
+            url: '<?= base_url(route_to('admin.req_doc.konfirmasi')) ?>', // ganti dengan URL backend kamu
+            type: 'POST',
+            data: formData,
+            success: function(res) {
+                alert('Berhasil disimpan');
+                $('#modalKonfirmasi').modal('hide');
+                $('#datatableDefault').DataTable().ajax.reload(null, false);
+            },
+            error: function(err) {
+                alert('Terjadi error');
             }
         });
     });

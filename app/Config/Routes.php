@@ -13,6 +13,8 @@ $routes->group('administrator', ['namespace' => 'App\Controllers\Be', 'filter' =
         $routes->get('/', 'RequestDocument::index', ['as' => 'admin.req-doc']);
         $routes->get('ajax-data', 'RequestDocument::ajaxData', ['as' => 'admin.req_doc.data']);
         $routes->get('ajax-get-detail-modal', 'RequestDocument::getDetailModal', ['as' => 'admin.get_detail_modal']);
+        $routes->post('req-doc/konfirmasi', 'RequestDocument::ajaxKonfirmasi', ['as' => 'admin.req_doc.konfirmasi']);
+        $routes->post('req-doc/delete', 'RequestDocument::ajaxDelete', ['as' => 'admin.req_doc.delete']);
     });
 
     $routes->group('mydocument', function ($routes) {

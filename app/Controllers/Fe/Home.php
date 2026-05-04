@@ -41,7 +41,8 @@ class Home extends BaseController
             'navs' => $this->getNavs(),
             'countDocs' => $this->getCountDoc(),
             ...$this->getJenis(),
-            ...$this->getHistoryDoc()
+            ...$this->getHistoryDoc(),
+            ...$this->getDivisi()
         ]);
     }
 
@@ -131,6 +132,12 @@ class Home extends BaseController
         }
 
         return $map;
+    }
+
+    private function getDivisi(){
+        return [
+            'divisis' => $this->divisiModel->getJoinData()->get()->getResultObject()
+        ];
     }
 
     private function resolveJenis($slug)
@@ -375,7 +382,7 @@ class Home extends BaseController
         $data = [
             'nama_user'        => $this->request->getPost('nama_user'),
             'email'        => $this->request->getPost('email'),
-            'divisi_id'        => $this->request->getPost('divisi'),
+            'divisi_id'        => $this->request->getPost('divisi_id'),
             'nama_doc'         => $this->request->getPost('nama_doc'),
             'no_doc'           => $this->request->getPost('no_doc'),
             'revisi'           => $this->request->getPost('revisi'),

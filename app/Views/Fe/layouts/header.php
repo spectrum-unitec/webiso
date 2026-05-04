@@ -37,7 +37,7 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
 
-            <form id="formCreateDocument" enctype="multipart/form-data">
+            <form id="formReqDocument" enctype="multipart/form-data">
 
                 <!-- HEADER -->
                 <div class="modal-header">
@@ -55,6 +55,16 @@
                             <div class="mb-3">
                                 <label class="form-label">Nama Pemohon</label>
                                 <input type="text" name="nama_user" class="form-control" placeholder="Masukan nama pemohon">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Divisi</label>
+                                <select name="divisi_id" class="form-control">
+                                    <option value="">-- Pilih --</option>
+                                    <?php foreach ($divisis as $row) : ?>
+                                        <option value="<?= $row->id; ?>"><?= $row->nama_dept; ?> - <?= $row->nama_divisi; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
                             </div>
 
                             <div class="mb-3">
@@ -101,12 +111,12 @@
 
                             <div class="mb-3">
                                 <label class="form-label">Alasan Perubahan/Pengadaan</label>
-                                <textarea name="alasan" id="" cols="55" rows="10"></textarea>
+                                <textarea name="alasan" id="" cols="55" rows="12"></textarea>
                             </div>
 
                             <div class="mb-3">
                                 <label class="form-label">Usulan Perubahan yang diajukan</label>
-                                <textarea name="usulan" id="" cols="55" rows="10"></textarea>
+                                <textarea name="usulan" id="" cols="55" rows="12"></textarea>
                             </div>
 
                             <!-- <div class="mb-3">
