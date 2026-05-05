@@ -88,7 +88,8 @@ class Home extends BaseController
                 'docTerkaitList' => $docTerkaitList,
                 'countDocs' => $this->getCountDoc(),
                 ...$this->getHistoryDoc(),
-                ...$jenisData
+                ...$jenisData,
+                ...$this->getDivisi()
             ]);
         }
 
@@ -107,7 +108,8 @@ class Home extends BaseController
             'segment3' => $segment3,
             'countDocs' => $this->getCountDoc(),
             ...$this->getHistoryDoc(),
-            ...$jenisData
+            ...$jenisData,
+            ...$this->getDivisi()
         ]);
     }
 
@@ -134,7 +136,8 @@ class Home extends BaseController
         return $map;
     }
 
-    private function getDivisi(){
+    private function getDivisi()
+    {
         return [
             'divisis' => $this->divisiModel->getJoinData()->get()->getResultObject()
         ];
@@ -362,7 +365,7 @@ class Home extends BaseController
         foreach ($docs as $doc) {
 
             if (!empty($divisiKode)) {
-                $route = route_to('home.menus.divisi',$deptSlug, $jenisSlug, $divisiKode);
+                $route = route_to('home.menus.divisi', $deptSlug, $jenisSlug, $divisiKode);
             } else {
                 $route = route_to('home.menus', $jenisSlug);
             }
@@ -416,7 +419,8 @@ class Home extends BaseController
             'listCategory' => $listCategory,
             'countDocs' => $this->getCountDoc(),
             ...$this->getJenis(),
-            ...$this->getHistoryDoc()
+            ...$this->getHistoryDoc(),
+            ...$this->getDivisi()
         ]);
     }
 }
