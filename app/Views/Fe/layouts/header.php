@@ -80,12 +80,12 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">No Dokumen</label>
+                                <label class="form-label">No Dokumen (optional)</label>
                                 <input type="text" name="no_doc" class="form-control" placeholder="Masukan no dokumen">
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">No Revisi</label>
+                                <label class="form-label">No Revisi (optional)</label>
                                 <input type="text" name="revisi" class="form-control" placeholder="Masukan revisi">
                             </div>
 
@@ -115,7 +115,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">Usulan Perubahan yang diajukan</label>
+                                <label class="form-label">Usulan Perubahan/Pengadaan yang diajukan</label>
                                 <textarea name="usulan" id="" cols="55" rows="10"></textarea>
                             </div>
 
