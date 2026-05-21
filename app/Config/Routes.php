@@ -15,6 +15,7 @@ $routes->group('administrator', ['namespace' => 'App\Controllers\Be', 'filter' =
         $routes->get('ajax-get-detail-modal', 'RequestDocument::getDetailModal', ['as' => 'admin.get_detail_modal']);
         $routes->post('req-doc/konfirmasi', 'RequestDocument::ajaxKonfirmasi', ['as' => 'admin.req_doc.konfirmasi']);
         $routes->post('req-doc/delete', 'RequestDocument::ajaxDelete', ['as' => 'admin.req_doc.delete']);
+        $routes->get('preview/(:num)', 'RequestDocument::preview/$1');
     });
 
     $routes->group('mydocument', function ($routes) {

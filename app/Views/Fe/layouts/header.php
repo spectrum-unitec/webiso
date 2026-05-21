@@ -111,18 +111,19 @@
 
                             <div class="mb-3">
                                 <label class="form-label">Alasan Perubahan/Pengadaan</label>
-                                <textarea name="alasan" id="" cols="55" rows="12"></textarea>
+                                <textarea name="alasan" id="" cols="55" rows="11"></textarea>
                             </div>
 
                             <div class="mb-3">
                                 <label class="form-label">Usulan Perubahan yang diajukan</label>
-                                <textarea name="usulan" id="" cols="55" rows="12"></textarea>
+                                <textarea name="usulan" id="" cols="55" rows="10"></textarea>
                             </div>
 
-                            <!-- <div class="mb-3">
-                                <label class="form-label">Upload Dokumen (PDF)</label>
-                                <input type="file" name="file_pdf" accept="application/pdf" class="form-control">
-                            </div> -->
+                            <div class="mb-3">
+                                <label class="form-label">Upload Lampiran Dokumen</label>
+                                <input type="file" name="lampiran" accept=".pdf,.doc,.docx,.xls,.xlsx" class="form-control">
+                                <small style="font-weight: 500;">File Support : pdf,doc,docs,xls,xlsx  | Max. 5 Mb</small>
+                            </div>
 
                         </div>
 

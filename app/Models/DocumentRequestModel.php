@@ -12,7 +12,7 @@ class DocumentRequestModel extends Model
     protected $returnType       = 'object';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['nama_user', 'email', 'divisi_id', 'nama_doc', 'no_doc', 'revisi', 'tgl_pengajuan', 'jenis_pengajuan', 'alasan', 'usulan', 'status', 'note', 'created_at', 'updated_at'];
+    protected $allowedFields    = ['nama_user', 'email', 'divisi_id', 'nama_doc', 'no_doc', 'revisi', 'tgl_pengajuan', 'jenis_pengajuan', 'alasan', 'usulan', 'file', 'status', 'note', 'created_at', 'updated_at'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

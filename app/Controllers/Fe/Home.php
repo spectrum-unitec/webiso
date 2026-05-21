@@ -5,12 +5,14 @@ namespace App\Controllers\Fe;
 use App\Controllers\BaseController;
 use App\Models\DepartmentModel;
 use App\Models\DivisiModel;
+use App\Models\DocumentRequestModel;
 use App\Models\HistoryDocumentModel;
 use App\Models\JenisDocumentModel;
 use App\Models\MydocumentModel;
 use App\Models\PivotDocumentTerkaitModel;
 use App\Models\PivotRekamanMutuModel;
 use App\Models\SubCategoryNonIsoModel;
+use Config\Services;
 
 class Home extends BaseController
 {
@@ -22,6 +24,7 @@ class Home extends BaseController
     protected $subCategoryNonIsoModel;
     protected $pivotDocRekamanMutuModel;
     protected $pivotDocTerkaitModel;
+    protected $documentReq;
 
     public function __construct()
     {
@@ -33,6 +36,7 @@ class Home extends BaseController
         $this->subCategoryNonIsoModel = new SubCategoryNonIsoModel();
         $this->pivotDocRekamanMutuModel = new PivotRekamanMutuModel();
         $this->pivotDocTerkaitModel = new PivotDocumentTerkaitModel();
+        $this->documentReq = new DocumentRequestModel();
     }
 
     public function index()
@@ -382,30 +386,82 @@ class Home extends BaseController
 
     public function requestDoc()
     {
+        // =========================
+        // VALIDASI FILE
+        // =========================
+
+        $validation = Services::validation();
+
+        $validation->setRules([
+            'lampiran' => [
+                'rules' => 'uploaded[lampiran]'
+                    . '|max_size[lampiran,5120]'
+                    . '|ext_in[lampiran,pdf,doc,docx,xls,xlsx]',
+                'errors' => [
+                    'uploaded' => 'File wajib diupload',
+                    'max_size' => 'Ukuran file maksimal 5MB',
+                    'ext_in'   => 'Format file tidak didukung'
+                ]
+            ]
+        ]);
+
+        if (!$validation->withRequest($this->request)->run()) {
+
+            return $this->response->setJSON([
+                'status'  => 'error',
+                'message' => $validation->getError('lampiran')
+            ]);
+        }
+
+        // =========================
+        // UPLOAD FILE
+        // =========================
+
+        $file = $this->request->getFile('lampiran');
+
+        $namaFile = null;
+
+        if ($file->isValid() && !$file->hasMoved()) {
+
+            // nama random
+            $namaFile = $file->getRandomName();
+
+            // folder upload
+            $file->move(ROOTPATH . 'public/uploads/request-doc/', $namaFile);
+        }
+
+        // =========================
+        // SIMPAN DATABASE
+        // =========================
+
         $data = [
-            'nama_user'        => $this->request->getPost('nama_user'),
-            'email'        => $this->request->getPost('email'),
-            'divisi_id'        => $this->request->getPost('divisi_id'),
-            'nama_doc'         => $this->request->getPost('nama_doc'),
-            'no_doc'           => $this->request->getPost('no_doc'),
-            'revisi'           => $this->request->getPost('revisi'),
-            'tgl_pengajuan'    => $this->request->getPost('tgl_pengajuan'),
-            'jenis_pengajuan'  => $this->request->getPost('jenis_pengajuan'),
-            'alasan'           => $this->request->getPost('alasan'),
-            'usulan'           => $this->request->getPost('usulan'),
+            'nama_user'       => $this->request->getPost('nama_user'),
+            'email'           => $this->request->getPost('email'),
+            'divisi_id'       => $this->request->getPost('divisi_id'),
+            'nama_doc'        => $this->request->getPost('nama_doc'),
+            'no_doc'          => $this->request->getPost('no_doc'),
+            'revisi'          => $this->request->getPost('revisi'),
+            'tgl_pengajuan'   => $this->request->getPost('tgl_pengajuan'),
+            'jenis_pengajuan' => $this->request->getPost('jenis_pengajuan'),
+            'alasan'          => $this->request->getPost('alasan'),
+            'usulan'          => $this->request->getPost('usulan'),
+
+            // simpan nama file
+            'file'        => $namaFile,
         ];
 
-        $model = new \App\Models\DocumentRequestModel();
+        $model = $this->documentReq;
 
         if ($model->insert($data)) {
+
             return $this->response->setJSON([
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Pengajuan berhasil dikirim!'
             ]);
         }
 
         return $this->response->setJSON([
-            'status' => 'error',
+            'status'  => 'error',
             'message' => 'Gagal menyimpan data'
         ]);
     }

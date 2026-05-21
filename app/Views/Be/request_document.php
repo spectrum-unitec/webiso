@@ -7,6 +7,32 @@
 
 <?= $this->section('content'); ?>
 
+<!-- toast -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 9999">
+
+    <div
+        id="liveToast"
+        class="toast align-items-center text-bg-success border-0"
+        role="alert">
+
+        <div class="d-flex">
+
+            <div class="toast-body" id="toastMessage">
+                Berhasil
+            </div>
+
+            <button
+                type="button"
+                class="btn-close btn-close-white me-2 m-auto"
+                data-bs-dismiss="toast">
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
 <div class="container">
     <div class="row justify-content-center" style="margin-left: 5rem;">
         <div class="col-xl-12">
@@ -169,15 +195,30 @@
                     searchable: false,
                     className: 'dt-nowrap text-center',
                     render: (data, type, row) => {
+
                         if (row.status === 'pratinjau') {
+
                             return `
-                            <button class="btn btn-sm btn-primary btn-konfirm" data-id="${data}">
-                                Konfirmasi
-                            </button>
-                        `;
+                                <a 
+                                    href="<?= base_url('administrator/request-dokumen/preview') ?>/${data}"
+                                    target="_blank"
+                                    class="btn btn-sm btn-dark">
+                                    Lampiran
+                                </a>
+                                
+                                 <button 
+                                    class="btn btn-sm btn-primary btn-konfirm" 
+                                    data-id="${data}">
+                                    Konfirmasi
+                                </button>
+                            `;
+
                         } else {
+
                             return `
-                                <button class="btn btn-sm btn-danger btn-hapus" data-id="${data}">
+                                <button 
+                                    class="btn btn-sm btn-danger btn-hapus" 
+                                    data-id="${data}">
                                     Hapus
                                 </button>
                             `;
@@ -252,24 +293,107 @@
 
 <script>
     $('#formKonfirmasi').on('submit', function(e) {
-        e.preventDefault(); // mencegah reload
 
-        let formData = $(this).serialize();
+        e.preventDefault();
+
+        let form = $(this);
+
+        let formData = form.serialize();
+
+        // button submit
+        let btnSubmit = form.find('button[type="submit"]');
+
+        // simpan text asli
+        let btnText = btnSubmit.html();
 
         $.ajax({
-            url: '<?= base_url(route_to('admin.req_doc.konfirmasi')) ?>', // ganti dengan URL backend kamu
+
+            url: '<?= base_url(route_to('admin.req_doc.konfirmasi')) ?>',
             type: 'POST',
             data: formData,
-            success: function(res) {
-                alert('Berhasil disimpan');
-                $('#modalKonfirmasi').modal('hide');
-                $('#datatableDefault').DataTable().ajax.reload(null, false);
+
+            // =========================
+            // BEFORE SEND
+            // =========================
+
+            beforeSend: function() {
+
+                // disable button
+                btnSubmit.prop('disabled', true);
+
+                // ubah isi button
+                btnSubmit.html(`
+                <span 
+                    class="spinner-border spinner-border-sm me-1" 
+                    role="status">
+                </span>
+                Loading...
+            `);
             },
+
+            // =========================
+            // SUCCESS
+            // =========================
+
+            success: function(res) {
+
+                showToast('Berhasil dikonfirmasi', 'success');
+
+                $('#modalKonfirmasi').modal('hide');
+
+                $('#datatableDefault')
+                    .DataTable()
+                    .ajax
+                    .reload(null, false);
+            },
+
+            // =========================
+            // ERROR
+            // =========================
+
             error: function(err) {
+
                 alert('Terjadi error');
+            },
+
+            // =========================
+            // COMPLETE
+            // =========================
+
+            complete: function() {
+
+                // aktifkan kembali button
+                btnSubmit.prop('disabled', false);
+
+                // kembalikan text button
+                btnSubmit.html(btnText);
             }
         });
     });
+</script>
+
+<script>
+    function showToast(message, type = 'success') {
+        let toast = $('#liveToast');
+
+        // reset class
+        toast.removeClass(
+            'text-bg-success text-bg-danger text-bg-warning'
+        );
+
+        // set warna
+        toast.addClass(`text-bg-${type}`);
+
+        // set pesan
+        $('#toastMessage').html(message);
+
+        // tampilkan toast
+        let bsToast = new bootstrap.Toast(
+            document.getElementById('liveToast')
+        );
+
+        bsToast.show();
+    }
 </script>
 
 <?= $this->endSection(); ?>
