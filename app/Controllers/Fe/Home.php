@@ -456,7 +456,7 @@ class Home extends BaseController
 
             return $this->response->setJSON([
                 'status'  => 'success',
-                'message' => 'Pengajuan berhasil dikirim!'
+                'message' => 'Pastikan Cek Email Secara Berkala.'
             ]);
         }
 

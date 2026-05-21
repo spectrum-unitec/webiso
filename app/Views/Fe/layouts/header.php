@@ -69,7 +69,7 @@
 
                             <div class="mb-3">
                                 <label class="form-label">Email Perusahaan</label>
-                                <input type="text" name="email" class="form-control" placeholder="Masukan email">
+                                <input type="text" name="email" class="form-control" placeholder="Masukan email ">
                             </div>
 
 
