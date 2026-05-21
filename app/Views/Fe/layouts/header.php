@@ -178,7 +178,7 @@
                                                 <th>No Dokumen</th>
                                                 <th>Nama Dokumen</th>
                                                 <th>Waktu</th>
-                                                <th>Aksi</th>
+                                                <!-- <th>Aksi</th> -->
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -189,9 +189,9 @@
                                                     <td><?= $row->no_document; ?></td>
                                                     <td><?= substr($row->nama_document, 0, 32); ?></td>
                                                     <td><?= $row->created_at; ?></td>
-                                                    <td>
+                                                    <!-- <td>
                                                         <button class="btn btn-sm btn-primary">Klik View</button>
-                                                    </td>
+                                                    </td> -->
                                                 </tr>
                                             <?php endforeach; ?>
                                         </tbody>
@@ -226,7 +226,7 @@
                                             <th>No Dokumen</th>
                                             <th>Nama Dokumen</th>
                                             <th>Waktu</th>
-                                            <th>Aksi</th>
+                                            <!-- <th>Aksi</th> -->
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -237,9 +237,9 @@
                                                 <td><?= $row->no_document; ?></td>
                                                 <td><?= substr($row->nama_document, 0, 32); ?></td>
                                                 <td><?= $row->created_at; ?></td>
-                                                <td>
+                                                <!-- <td>
                                                     <button class="btn btn-sm btn-primary">Klik View</button>
-                                                </td>
+                                                </td> -->
                                             </tr>
                                         <?php endforeach; ?>
                                     </tbody>
